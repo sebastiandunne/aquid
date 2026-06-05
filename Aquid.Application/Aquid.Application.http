@@ -1,0 +1,9 @@
+@Aquid_Application_HostAddress = http://localhost:5196
+
+GET {{Aquid_Application_HostAddress}}/api/weather/forecast/
+Accept: application/json
+
+###
+
+GET {{Aquid_Application_HostAddress}}/api/airquality/countries/nl/
+Accept: application/json
