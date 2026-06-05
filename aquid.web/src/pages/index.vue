@@ -1,7 +1,7 @@
 <template>
-  <CountryFetcher />
+  <MapBoxMap />
 </template>
 
 <script lang="ts" setup>
-  import CountryFetcher from '@/components/CountryFetcher.vue'
+  import MapBoxMap from '@/widgets/MapBoxMap.vue'
 </script>
