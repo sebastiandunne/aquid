@@ -44,8 +44,7 @@ public class OpenAqApiClient
             entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration;
 
             _logger.LogInformation("OpenAQ cache miss for {CacheKey}; requesting {RelativePath}", cacheKey, relativePath);
-            
-            const string flipDeRelPath = "v3/locations?bbox=2.200,50.282,8.883,53.752"; // lng lat lng lat (south first)
+
             using var response = await _httpClient.GetAsync(relativePath, cancellationToken);
             response.EnsureSuccessStatusCode();
 

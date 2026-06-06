@@ -1,6 +1,6 @@
 namespace Aquid.Core.Models.AirQuality;
 
-public record AirQualityLocationResponse(
+public record AirQualityLocationsResponse(
 	AirQualityLocationMeta Meta,
 	IReadOnlyList<AirQualityLocation> Results);
 

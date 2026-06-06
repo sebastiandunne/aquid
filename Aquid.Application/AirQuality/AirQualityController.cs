@@ -33,9 +33,9 @@ public class AirQualityController : ControllerBase
     
     [HttpGet("locations")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(AirQualityLocationResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AirQualityLocationsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<AirQualityLocationResponse>> GetLocationsInBoundingBox(
+    public async Task<ActionResult<AirQualityLocationsResponse>> GetLocationsInBoundingBox(
         [FromQuery(Name = "ne_lat")] double neLat,
         [FromQuery(Name = "ne_lng")] double neLong,
         [FromQuery(Name = "sw_lat")] double swLat,

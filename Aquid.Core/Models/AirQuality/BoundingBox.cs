@@ -10,6 +10,6 @@ public readonly record struct BoundingBox(
 	{
 		return string.Create(
 			System.Globalization.CultureInfo.InvariantCulture,
-			$"{SouthWestLatitude},{SouthWestLongitude},{NorthEastLatitude},{NorthEastLongitude}");
+			$"{SouthWestLongitude},{SouthWestLatitude},{NorthEastLongitude},{NorthEastLatitude}");
 	}
 }

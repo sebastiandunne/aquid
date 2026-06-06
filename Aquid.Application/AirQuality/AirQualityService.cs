@@ -68,7 +68,7 @@ public class AirQualityService
             : new AirQualityCountryResponse(new[] { match });
     }
 
-    public async Task<AirQualityLocationResponse> GetLocationsInBoundingBoxAsync(
+    public async Task<AirQualityLocationsResponse> GetLocationsInBoundingBoxAsync(
         BoundingBox boundingBox,
         CancellationToken cancellationToken)
     {
@@ -78,7 +78,7 @@ public class AirQualityService
 
         _logger.LogInformation("Requesting OpenAQ locations for bbox {BoundingBox}", bbox);
 
-        var res = await _openAqApiClient.GetJsonCachedAsync<AirQualityLocationResponse>(
+        var res = await _openAqApiClient.GetJsonCachedAsync<AirQualityLocationsResponse>(
             endpoint,
             cacheKey,
             cancellationToken);
