@@ -10,7 +10,7 @@
   import { useRouteQuery } from '@vueuse/router'
   import { computed } from 'vue'
   import { useRouter } from 'vue-router'
-  import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM } from './entities/map'
+  import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM, DEFAULT_SYNC_DEBOUNCE } from './entities/map'
   import { useMapStore } from './entities/map/store'
   import { useDebounced } from './shared/lib/debounce'
   import { routeTransformNumber } from './shared/route-transformers'
@@ -52,19 +52,19 @@
 
   useDebounced({
     valueRef: lat,
-    timeout: 500,
+    timeout: DEFAULT_SYNC_DEBOUNCE,
     onUpdate: syncViewportToRoute,
   })
 
   useDebounced({
     valueRef: lng,
-    timeout: 500,
+    timeout: DEFAULT_SYNC_DEBOUNCE,
     onUpdate: syncViewportToRoute,
   })
 
   useDebounced({
     valueRef: zoom,
-    timeout: 500,
+    timeout: DEFAULT_SYNC_DEBOUNCE,
     onUpdate: syncViewportToRoute,
   })
 

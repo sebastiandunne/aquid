@@ -12,17 +12,33 @@
   import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM } from '@/entities/map'
   import { useMapStore } from '@/entities/map/store'
 
+  type MapDebugGuiState = {
+    centerLng: number
+    centerLat: number
+    zoom: number
+    clickLng: number | string
+    clickLat: number | string
+    boundsNorthEastLng?: number
+    boundsNorthEastLat?: number
+    boundsSouthWestLng?: number
+    boundsSouthWestLat?: number
+  }
+
   const mapStore = useMapStore()
-  const { center, zoom, lastClicked } = storeToRefs(mapStore)
+  const { center, zoom, lastClicked, bounds } = storeToRefs(mapStore)
 
   const guiContainer = useTemplateRef('guiContainer')
 
-  const guiState = reactive({
+  const guiState = reactive<MapDebugGuiState>({
     centerLng: DEFAULT_ROUTE_LNG,
     centerLat: DEFAULT_ROUTE_LAT,
     zoom: DEFAULT_ROUTE_ZOOM,
     clickLng: '-',
     clickLat: '-',
+    boundsNorthEastLng: 0,
+    boundsNorthEastLat: 0,
+    boundsSouthWestLng: 0,
+    boundsSouthWestLat: 0,
   })
 
   let gui: GUI | null = null
@@ -36,6 +52,10 @@
     guiState.centerLng = center.value.lng
     guiState.centerLat = center.value.lat
     guiState.zoom = zoom.value
+    guiState.boundsNorthEastLng = bounds?.value?.northeast.lng
+    guiState.boundsNorthEastLat = bounds?.value?.northeast.lat
+    guiState.boundsSouthWestLng = bounds?.value?.southwest.lng
+    guiState.boundsSouthWestLat = bounds?.value?.southwest.lat
 
     if (!lastClicked.value) {
       guiState.clickLng = '-'
@@ -63,6 +83,7 @@
 
     const viewportFolder = gui.addFolder('Viewport')
     const clickFolder = gui.addFolder('Last Click')
+    const boundsFolder = gui.addFolder('Bounds')
 
     const centerLngController = viewportFolder
       .add(guiState, 'centerLng')
@@ -86,12 +107,33 @@
       .name('lat')
       .listen()
 
+    const boundsNorthEastLngController = boundsFolder
+      .add(guiState, 'boundsNorthEastLng')
+      .name('northeast.lng')
+      .listen()
+    const boundsNorthEastLatController = boundsFolder
+      .add(guiState, 'boundsNorthEastLat')
+      .name('northeast.lat')
+      .listen()
+    const boundsSouthWestLngController = boundsFolder
+      .add(guiState, 'boundsSouthWestLng')
+      .name('southwest.lng')
+      .listen()
+    const boundsSouthWestLatController = boundsFolder
+      .add(guiState, 'boundsSouthWestLat')
+      .name('southwest.lat')
+      .listen()
+
     disableControllers([
       centerLngController,
       centerLatController,
       zoomController,
       clickLngController,
       clickLatController,
+      boundsNorthEastLngController,
+      boundsNorthEastLatController,
+      boundsSouthWestLngController,
+      boundsSouthWestLatController,
     ])
 
     syncStateFromStore()

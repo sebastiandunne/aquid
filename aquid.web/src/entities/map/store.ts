@@ -6,9 +6,15 @@ export type LngLat = {
   lat: number
 }
 
+export type MapBounds = {
+  northeast: LngLat
+  southwest: LngLat
+}
+
 export type MapViewport = {
   center: LngLat
   zoom: number
+  bounds?: MapBounds
 }
 
 export type MapStoreState = MapViewport & {
@@ -23,6 +29,7 @@ const DEFAULT_VIEWPORT: MapViewport = {
     lat: DEFAULT_ROUTE_LAT,
   },
   zoom: DEFAULT_ROUTE_ZOOM,
+  bounds: undefined,
 }
 
 function isMapViewport (obj: any): obj is MapViewport {
@@ -55,6 +62,18 @@ function getStoredViewport (): MapViewport | null {
       lat: parsed.center.lat,
     },
     zoom: parsed.zoom,
+    bounds: parsed.bounds
+      ? {
+          northeast: {
+            lng: parsed.bounds.northeast.lng,
+            lat: parsed.bounds.northeast.lat,
+          },
+          southwest: {
+            lng: parsed.bounds.southwest.lng,
+            lat: parsed.bounds.southwest.lat,
+          },
+        }
+      : undefined,
   }
 }
 
@@ -69,6 +88,7 @@ export const useMapStore = defineStore('map', {
     return {
       center: initialViewport.center as LngLat,
       zoom: initialViewport.zoom,
+      bounds: initialViewport.bounds,
       lastClicked: null as LngLat | null,
     }
   },
@@ -77,6 +97,18 @@ export const useMapStore = defineStore('map', {
       this.center.lat = payload.center.lat
       this.center.lng = payload.center.lng
       this.zoom = payload.zoom
+      if (payload.bounds) {
+        this.bounds = {
+          northeast: {
+            lng: payload.bounds.northeast.lng,
+            lat: payload.bounds.northeast.lat,
+          },
+          southwest: {
+            lng: payload.bounds.southwest.lng,
+            lat: payload.bounds.southwest.lat,
+          },
+        }
+      }
       saveViewport(payload)
     },
     setLastClicked (coords: LngLat) {

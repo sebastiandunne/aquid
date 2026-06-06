@@ -67,4 +67,22 @@ public class AirQualityService
             ? new AirQualityCountryResponse(Array.Empty<AirQualityCountry>())
             : new AirQualityCountryResponse(new[] { match });
     }
+
+    public async Task<AirQualityLocationResponse> GetLocationsInBoundingBoxAsync(
+        BoundingBox boundingBox,
+        CancellationToken cancellationToken)
+    {
+        var bbox = boundingBox.ToOpenAqBboxQueryValue();
+        var endpoint = $"v3/locations?bbox={bbox}";
+        var cacheKey = $"openaq:locations:bbox:{bbox}";
+
+        _logger.LogInformation("Requesting OpenAQ locations for bbox {BoundingBox}", bbox);
+
+        var res = await _openAqApiClient.GetJsonCachedAsync<AirQualityLocationResponse>(
+            endpoint,
+            cacheKey,
+            cancellationToken);
+
+        return res;
+    }
 }

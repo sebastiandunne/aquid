@@ -7,3 +7,8 @@ Accept: application/json
 
 GET {{Aquid_Application_HostAddress}}/api/airquality/countries/nl/
 Accept: application/json
+
+###
+
+GET {{Aquid_Application_HostAddress}}/api/airquality/locations?ne_lat=9.842&ne_lng=54.343&sw_lat=2.075&sw_lng=50.340
+Accept: application/json

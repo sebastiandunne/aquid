@@ -11,8 +11,10 @@
 
 <script setup lang="ts">
   import type { MapViewport } from '@/entities/map/store'
+  import { debounce } from 'lodash'
   import mapboxgl from 'mapbox-gl'
   import { onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
+  import { DEFAULT_SYNC_DEBOUNCE } from '@/entities/map'
   import { useMapStore } from '@/entities/map/store'
   import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -34,17 +36,37 @@
   function getViewportState (instance: mapboxgl.Map) {
     const center = instance.getCenter()
 
+    const mapBounds = instance.getBounds()
+    const northeast = mapBounds?.getNorthEast()
+    const southwest = mapBounds?.getSouthWest()
+
+    const bounds = northeast && southwest
+      ? {
+        northeast: {
+          lng: northeast.lng,
+          lat: northeast.lat,
+        },
+        southwest: {
+          lng: southwest.lng,
+          lat: southwest.lat,
+        },
+      }
+      : undefined
+
     return {
       center: {
         lng: center.lng,
         lat: center.lat,
       },
       zoom: instance.getZoom(),
+      bounds,
     }
   }
 
   function syncViewportToStore (instance: mapboxgl.Map) {
-    mapStore.setViewport(getViewportState(instance))
+    debounce(() => {
+      mapStore.setViewport(getViewportState(instance))
+    }, DEFAULT_SYNC_DEBOUNCE)()
   }
 
   function handleMove () {
@@ -90,6 +112,7 @@
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [initialViewport.center.lng, initialViewport.center.lat],
       zoom: initialViewport.zoom,
+      // language: 'nl',
     })
 
     bindMapEvents(newMap)
