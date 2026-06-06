@@ -676,6 +676,19 @@
           }
         }
       },
+      "UltravioletForecastMeta": {
+        "required": [
+          "max"
+        ],
+        "type": "object",
+        "properties": {
+          "max": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "UltravioletForecastMetaResponse": {
         "required": [
           "result",
@@ -690,20 +703,7 @@
             }
           },
           "meta": {
-            "$ref": "#/components/schemas/UltravioletForecastResponseMeta"
-          }
-        }
-      },
-      "UltravioletForecastResponseMeta": {
-        "required": [
-          "max"
-        ],
-        "type": "object",
-        "properties": {
-          "max": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
-            "type": "number",
-            "format": "double"
+            "$ref": "#/components/schemas/UltravioletForecastMeta"
           }
         }
       },

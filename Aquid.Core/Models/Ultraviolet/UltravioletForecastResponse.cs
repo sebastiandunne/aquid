@@ -7,7 +7,7 @@ public record UltravioletForecastResponse(
 
 public record UltravioletForecastMetaResponse(
     [property: JsonPropertyName("result")] IReadOnlyList<UltravioletForecastResult> Result,
-    [property: JsonPropertyName("meta")] UltravioletForecastResponseMeta Meta)
+    [property: JsonPropertyName("meta")] UltravioletForecastMeta Meta)
 {
     public static UltravioletForecastMetaResponse From(UltravioletForecastResponse result)
     {
@@ -18,11 +18,11 @@ public record UltravioletForecastMetaResponse(
 
         return new UltravioletForecastMetaResponse(
             result.Result,
-            new UltravioletForecastResponseMeta(maxValue));
+            new UltravioletForecastMeta(maxValue));
     }
 }
 
-public record UltravioletForecastResponseMeta(
+public record UltravioletForecastMeta(
     [property: JsonPropertyName("max")] double Max);
 
 public record UltravioletForecastResult(

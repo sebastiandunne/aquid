@@ -306,13 +306,13 @@ export interface components {
       detail?: null | string
       instance?: null | string
     }
-    UltravioletForecastMetaResponse: {
-      result: components['schemas']['UltravioletForecastResult'][]
-      meta: components['schemas']['UltravioletForecastResponseMeta']
-    }
-    UltravioletForecastResponseMeta: {
+    UltravioletForecastMeta: {
       /** Format: double */
       max: number
+    }
+    UltravioletForecastMetaResponse: {
+      result: components['schemas']['UltravioletForecastResult'][]
+      meta: components['schemas']['UltravioletForecastMeta']
     }
     UltravioletForecastResult: {
       /** Format: double */
