@@ -9,10 +9,18 @@
   import GUI from 'lil-gui'
   import { storeToRefs } from 'pinia'
   import { onMounted, onUnmounted, reactive, useTemplateRef, watch } from 'vue'
-  import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM } from '@/entities/map'
-  import { useMapStore } from '@/entities/map/store'
+  import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM, useMapStore } from '@/entities/map'
+  import {
+    type Language,
+    LANGUAGE_OPTIONS,
+    type Theme,
+    THEME_OPTIONS,
+    usePreferencesStore,
+  } from '@/entities/preferences'
 
   type MapDebugGuiState = {
+    language: Language
+    theme: Theme
     centerLng: number
     centerLat: number
     zoom: number
@@ -25,11 +33,15 @@
   }
 
   const mapStore = useMapStore()
+  const preferencesStore = usePreferencesStore()
   const { center, zoom, lastClicked, bounds } = storeToRefs(mapStore)
+  const { language, theme } = storeToRefs(preferencesStore)
 
   const guiContainer = useTemplateRef('guiContainer')
 
   const guiState = reactive<MapDebugGuiState>({
+    language: 'en',
+    theme: 'light',
     centerLng: DEFAULT_ROUTE_LNG,
     centerLat: DEFAULT_ROUTE_LAT,
     zoom: DEFAULT_ROUTE_ZOOM,
@@ -49,6 +61,8 @@
   }
 
   function syncStateFromStore () {
+    guiState.language = language.value
+    guiState.theme = theme.value
     guiState.centerLng = center.value.lng
     guiState.centerLat = center.value.lat
     guiState.zoom = zoom.value
@@ -81,9 +95,26 @@
       container: guiContainer.value,
     })
 
+    const preferencesFolder = gui.addFolder('Preferences')
     const viewportFolder = gui.addFolder('Viewport')
     const clickFolder = gui.addFolder('Last Click')
     const boundsFolder = gui.addFolder('Bounds')
+
+    preferencesFolder
+      .add(guiState, 'language', [...LANGUAGE_OPTIONS])
+      .name('language')
+      .listen()
+      .onChange((newLanguage: Language) => {
+        preferencesStore.setLanguage(newLanguage)
+      })
+
+    preferencesFolder
+      .add(guiState, 'theme', [...THEME_OPTIONS])
+      .name('theme')
+      .listen()
+      .onChange((newTheme: Theme) => {
+        preferencesStore.setTheme(newTheme)
+      })
 
     const centerLngController = viewportFolder
       .add(guiState, 'centerLng')
@@ -137,7 +168,7 @@
     ])
 
     syncStateFromStore()
-    stopSync = watch([center, zoom, lastClicked], syncStateFromStore, {
+    stopSync = watch([language, theme, center, zoom, lastClicked, bounds], syncStateFromStore, {
       deep: true,
     })
   })

@@ -1,25 +1,5 @@
 import { defineStore } from 'pinia'
-import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM } from '@/entities/map'
-
-export type LngLat = {
-  lng: number
-  lat: number
-}
-
-export type MapBounds = {
-  northeast: LngLat
-  southwest: LngLat
-}
-
-export type MapViewport = {
-  center: LngLat
-  zoom: number
-  bounds?: MapBounds
-}
-
-export type MapStoreState = MapViewport & {
-  lastClicked: LngLat | null
-}
+import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM, type LngLat, type MapStoreState, type MapViewport } from '@/entities/map'
 
 const VIEWPORT_STORAGE_KEY = 'aquid.map.viewport'
 

@@ -1,5 +1,5 @@
 import { AquidClient } from '@/shared/client/aquid-client'
-import { AirQualityService } from '../air-quality/air-quality-service'
+import { AirQualityService } from '../air-quality/api/air-quality-service'
 
 export class AquidServices {
   airQuality: AirQualityService

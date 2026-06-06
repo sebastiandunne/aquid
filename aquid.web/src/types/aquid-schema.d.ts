@@ -97,10 +97,10 @@ export interface paths {
     get: {
       parameters: {
         query?: {
-          ne_lat?: number | string
-          ne_lng?: number | string
-          sw_lat?: number | string
-          sw_lng?: number | string
+          ne_lat?: number
+          ne_lng?: number
+          sw_lat?: number
+          sw_lng?: number
         }
         header?: never
         path?: never
@@ -114,7 +114,7 @@ export interface paths {
             [name: string]: unknown
           }
           content: {
-            'application/json': components['schemas']['AirQualityLocationResponse']
+            'application/json': components['schemas']['AirQualityLocationsResponse']
           }
         }
         /** @description Internal Server Error */
@@ -142,7 +142,7 @@ export interface components {
   schemas: {
     AirQualityCountry: {
       /** Format: int64 */
-      id: number | string
+      id: number
       code: string
       name: string
       /** Format: date-time */
@@ -156,7 +156,7 @@ export interface components {
     }
     AirQualityLocation: {
       /** Format: int64 */
-      id: number | string
+      id: number
       name: string
       locality: null | string
       timezone: string
@@ -169,9 +169,9 @@ export interface components {
       sensors: components['schemas']['AirQualityLocationSensor'][]
       coordinates: components['schemas']['AirQualityLocationCoordinates']
       licenses: components['schemas']['AirQualityLocationLicense'][]
-      bounds: (number | string)[]
+      bounds: number[]
       /** Format: double */
-      distance: null | number | string
+      distance: null | number
       dateTimeFirst: components['schemas']['AirQualityLocationDateTime']
       dateTimeLast: components['schemas']['AirQualityLocationDateTime']
     }
@@ -181,13 +181,13 @@ export interface components {
     }
     AirQualityLocationCoordinates: {
       /** Format: double */
-      latitude: number | string
+      latitude: number
       /** Format: double */
-      longitude: number | string
+      longitude: number
     }
     AirQualityLocationCountry: {
       /** Format: int64 */
-      id: number | string
+      id: number
       code: string
       name: string
     }
@@ -199,12 +199,12 @@ export interface components {
     }
     AirQualityLocationInstrument: {
       /** Format: int64 */
-      id: number | string
+      id: number
       name: string
     }
     AirQualityLocationLicense: {
       /** Format: int64 */
-      id: number | string
+      id: number
       name: string
       attribution: components['schemas']['AirQualityLocationAttribution']
       /** Format: date-time */
@@ -216,37 +216,35 @@ export interface components {
       name: string
       website: string
       /** Format: int32 */
-      page: number | string
+      page: number
       /** Format: int32 */
-      limit: number | string
-      /** Format: int32 */
-      found?: null | number | string
+      limit: number
     }
     AirQualityLocationOrganization: {
       /** Format: int64 */
-      id: number | string
+      id: number
       name: string
     }
     AirQualityLocationParameter: {
       /** Format: int64 */
-      id: number | string
+      id: number
       name: string
       units: string
       displayName: null | string
     }
-    AirQualityLocationResponse: {
-      meta: components['schemas']['AirQualityLocationMeta']
-      results: components['schemas']['AirQualityLocation'][]
-    }
     AirQualityLocationSensor: {
       /** Format: int64 */
-      id: number | string
+      id: number
       name: string
       parameter: components['schemas']['AirQualityLocationParameter']
     }
+    AirQualityLocationsResponse: {
+      meta: components['schemas']['AirQualityLocationMeta']
+      results: components['schemas']['AirQualityLocation'][]
+    }
     AirQualityParameter: {
       /** Format: int64 */
-      id: number | string
+      id: number
       name: string
       units: string
       displayName: null | string
@@ -255,7 +253,7 @@ export interface components {
       type?: null | string
       title?: null | string
       /** Format: int32 */
-      status?: null | number | string
+      status?: null | number
       detail?: null | string
       instance?: null | string
     }
@@ -263,10 +261,10 @@ export interface components {
       /** Format: date */
       date: string
       /** Format: int32 */
-      temperatureC: number | string
+      temperatureC: number
       summary: null | string
       /** Format: int32 */
-      temperatureF?: number | string
+      temperatureF?: number
     }
   }
   responses: never

@@ -10,18 +10,34 @@
 </template>
 
 <script setup lang="ts">
-  import type { MapViewport } from '@/entities/map/store'
   import { debounce } from 'lodash'
   import mapboxgl from 'mapbox-gl'
-  import { onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
-  import { DEFAULT_SYNC_DEBOUNCE } from '@/entities/map'
-  import { useMapStore } from '@/entities/map/store'
+  import { storeToRefs } from 'pinia'
+  import { onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
+  import { useAirQualityLocations } from '@/entities/air-quality'
+  import { DEFAULT_SYNC_DEBOUNCE, MapPinHandler, type MapViewport, useMapStore } from '@/entities/map'
+  import { usePreferencesStore } from '@/entities/preferences'
   import 'mapbox-gl/dist/mapbox-gl.css'
 
   const mapContainer = useTemplateRef('mapContainer')
 
   const map = shallowRef<mapboxgl.Map | null>(null)
+  const mapPinHandler = shallowRef<MapPinHandler | null>(null)
   const mapStore = useMapStore()
+  const preferencesStore = usePreferencesStore()
+
+  const { bounds } = storeToRefs(mapStore)
+  const { language, theme } = storeToRefs(preferencesStore)
+
+  const {
+    locations,
+  } = useAirQualityLocations({
+    bounds,
+  })
+
+  const syncViewportToStoreDebounced = debounce((instance: mapboxgl.Map) => {
+    mapStore.setViewport(getViewportState(instance))
+  }, DEFAULT_SYNC_DEBOUNCE)
 
   function getInitialViewportFromStore (): MapViewport {
     return {
@@ -64,9 +80,7 @@
   }
 
   function syncViewportToStore (instance: mapboxgl.Map) {
-    debounce(() => {
-      mapStore.setViewport(getViewportState(instance))
-    }, DEFAULT_SYNC_DEBOUNCE)()
+    syncViewportToStoreDebounced(instance)
   }
 
   function handleMove () {
@@ -98,6 +112,44 @@
     instance.on('click', handleClick)
   }
 
+  function syncMapLanguage (map: mapboxgl.Map, nextLanguage: string) {
+    if (map.getLanguage() === nextLanguage) {
+      return
+    }
+    map.setLanguage(nextLanguage)
+  }
+
+  function syncMapTheme (map: mapboxgl.Map, nextTheme: string) {
+    const styleId = nextTheme === 'dark' ? 'mapbox/dark-v10' : 'mapbox/streets-v11'
+    const styleUrl = `mapbox://styles/${styleId}`
+
+    map.setStyle(styleUrl)
+  }
+
+  watch(locations, newLocations => {
+    if (newLocations.length === 0 || !mapPinHandler.value) {
+      return
+    }
+
+    mapPinHandler.value.setLocations(newLocations)
+  })
+
+  watch(language, newLanguage => {
+    if (!map.value) {
+      return
+    }
+
+    syncMapLanguage(map.value, newLanguage)
+  })
+
+  watch(theme, newTheme => {
+    if (!map.value) {
+      return
+    }
+
+    syncMapTheme(map.value, newTheme)
+  })
+
   onMounted(() => {
     if (!mapContainer.value) {
       console.error('Map container not found')
@@ -112,16 +164,24 @@
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [initialViewport.center.lng, initialViewport.center.lat],
       zoom: initialViewport.zoom,
-      // language: 'nl',
     })
 
     bindMapEvents(newMap)
     syncViewportToStore(newMap)
+    syncMapLanguage(newMap, language.value)
+    syncMapTheme(newMap, theme.value)
 
     map.value = newMap
+    mapPinHandler.value = new MapPinHandler(newMap)
+    mapPinHandler.value.setLocations(locations.value)
   })
 
   onUnmounted(() => {
+    syncViewportToStoreDebounced.cancel()
+
+    mapPinHandler.value?.clear()
+    mapPinHandler.value = null
+
     if (map.value) {
       map.value.remove()
       map.value = null

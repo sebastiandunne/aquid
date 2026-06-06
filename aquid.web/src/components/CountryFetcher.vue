@@ -17,7 +17,7 @@
 <script setup lang="ts">
   import { useQuery } from '@tanstack/vue-query'
   import { ref } from 'vue'
-  import { airQualityQueries } from '@/entities/air-quality/air-quality-queries'
+  import { airQualityQueries } from '@/entities/air-quality'
   import { useDebounced } from '@/shared/lib/debounce'
 
   const countryCode = ref('')
