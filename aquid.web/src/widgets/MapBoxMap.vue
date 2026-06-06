@@ -1,23 +1,39 @@
 <template>
-  <div
-    ref="mapContainer"
-    class="
-        map-container
-        h-full
-        w-full
-    "
-  />
+  <div class="map-wrap h-full w-full">
+    <MapBoxSearch
+      v-if="props.searchEnabled"
+      class="fixed top-4 left-4 z-1"
+      :map="map"
+      :token="token"
+    />
+
+    <div
+      ref="mapContainer"
+      class="
+          map-container
+          h-full
+          w-full
+      "
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
   import { debounce } from 'lodash'
   import mapboxgl from 'mapbox-gl'
   import { storeToRefs } from 'pinia'
-  import { onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
+  import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
   import { useAirQualityLocations } from '@/entities/air-quality'
   import { DEFAULT_SYNC_DEBOUNCE, MapPinHandler, type MapViewport, useMapStore } from '@/entities/map'
   import { usePreferencesStore } from '@/entities/preferences'
+  import MapBoxSearch from './MapBoxSearch.vue'
   import 'mapbox-gl/dist/mapbox-gl.css'
+
+  const props = defineProps<{
+    searchEnabled?: boolean
+  }>()
+
+  const token = computed(() => import.meta.env.VITE_MAPBOX_ACCESS_TOKEN)
 
   const mapContainer = useTemplateRef('mapContainer')
 

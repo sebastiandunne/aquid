@@ -1,7 +1,9 @@
+import type { App } from 'vue'
 import * as Sentry from '@sentry/vue'
 
-export function initSentry (dsn: string) {
+export function initSentry (app: App, dsn: string) {
   Sentry.init({
+    app,
     dsn,
     integrations: [
       Sentry.browserTracingIntegration(),

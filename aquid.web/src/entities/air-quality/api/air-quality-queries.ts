@@ -36,7 +36,6 @@ export class AirQualityQueries extends QueryFactory<AirQualityService> {
     return queryOptions({
       queryKey: [...this.all, 'locations', bounds] as QueryKey,
       queryFn: async () => {
-        console.log('fetching locations with bounds:', toValue(bounds))
         const deRefBounds = toValue(bounds)
         if (!deRefBounds) {
           throw new Error('Bounds are required to fetch locations')
