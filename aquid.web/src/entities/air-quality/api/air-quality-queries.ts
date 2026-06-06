@@ -1,5 +1,5 @@
 import type { AirQualityService } from './air-quality-service'
-import type { MapBounds } from '@/entities/map/model/store'
+import type { MapBounds } from '@/entities/map/@x/air-quality'
 import type { components } from '@/types/aquid-schema'
 import { type QueryKey, queryOptions, type UseQueryOptions } from '@tanstack/vue-query'
 import { type MaybeRefOrGetter, toValue } from 'vue'

@@ -43,7 +43,11 @@ public class UltravioletController : ControllerBase
             }
         }
 
-        var result = await _ultravioletService.GetUltravioletForecast(lat, lng, altitude, parsedDateTime, cancellationToken);
+        // truncate lat and lng to 1 decimal place to reduce the number of unique forecasts and improve cache hit rates
+        var roundedLat = Math.Round(lat, 1);
+        var roundedLng = Math.Round(lng, 1);
+
+        var result = await _ultravioletService.GetUltravioletForecast(roundedLat, roundedLng, altitude, parsedDateTime, cancellationToken);
     
 
         var resultMeta = UltravioletForecastMetaResponse.From(result);
