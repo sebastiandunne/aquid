@@ -43,6 +43,71 @@
         }
       }
     },
+    "/api/Ultraviolet/forecast": {
+      "get": {
+        "tags": [
+          "Ultraviolet"
+        ],
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "alt",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dt",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UltravioletForecastMetaResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/AirQuality/countries/{isoCountryCode}": {
       "get": {
         "tags": [
@@ -611,6 +676,78 @@
           }
         }
       },
+      "UltravioletForecastMetaResponse": {
+        "required": [
+          "result",
+          "meta"
+        ],
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UltravioletForecastResult"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/UltravioletForecastResponseMeta"
+          }
+        }
+      },
+      "UltravioletForecastResponseMeta": {
+        "required": [
+          "max"
+        ],
+        "type": "object",
+        "properties": {
+          "max": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "UltravioletForecastResult": {
+        "required": [
+          "uv",
+          "uv_time",
+          "sun_position"
+        ],
+        "type": "object",
+        "properties": {
+          "uv": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "uv_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sun_position": {
+            "$ref": "#/components/schemas/UltravioletSunPosition"
+          }
+        }
+      },
+      "UltravioletSunPosition": {
+        "required": [
+          "azimuth",
+          "altitude"
+        ],
+        "type": "object",
+        "properties": {
+          "azimuth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "altitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "WeatherForecast": {
         "required": [
           "date",
@@ -646,6 +783,9 @@
   "tags": [
     {
       "name": "Weather"
+    },
+    {
+      "name": "Ultraviolet"
     },
     {
       "name": "AirQuality"

@@ -41,6 +41,55 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/Ultraviolet/forecast': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get: {
+      parameters: {
+        query?: {
+          lat?: number
+          lng?: number
+          alt?: number
+          dt?: string
+        }
+        header?: never
+        path?: never
+        cookie?: never
+      }
+      requestBody?: never
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown
+          }
+          content: {
+            'application/json': components['schemas']['UltravioletForecastMetaResponse']
+          }
+        }
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown
+          }
+          content: {
+            'application/json': components['schemas']['ProblemDetails']
+          }
+        }
+      }
+    }
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/AirQuality/countries/{isoCountryCode}': {
     parameters: {
       query?: never
@@ -256,6 +305,27 @@ export interface components {
       status?: null | number
       detail?: null | string
       instance?: null | string
+    }
+    UltravioletForecastMetaResponse: {
+      result: components['schemas']['UltravioletForecastResult'][]
+      meta: components['schemas']['UltravioletForecastResponseMeta']
+    }
+    UltravioletForecastResponseMeta: {
+      /** Format: double */
+      max: number
+    }
+    UltravioletForecastResult: {
+      /** Format: double */
+      uv: number
+      /** Format: date-time */
+      uv_time: string
+      sun_position: components['schemas']['UltravioletSunPosition']
+    }
+    UltravioletSunPosition: {
+      /** Format: double */
+      azimuth: number
+      /** Format: double */
+      altitude: number
     }
     WeatherForecast: {
       /** Format: date */

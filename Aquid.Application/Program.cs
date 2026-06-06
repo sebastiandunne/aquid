@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Aquid.Application.AirQuality;
+using Aquid.Application.Ultraviolet;
 using Aquid.Application.Weather;
 using Microsoft.OpenApi;
 using System.Net.Http.Headers;
@@ -35,12 +36,17 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
     containerBuilder.RegisterType<WeatherService>().AsSelf().InstancePerLifetimeScope();
     containerBuilder.RegisterType<AirQualityService>().AsSelf().InstancePerLifetimeScope();
+    containerBuilder.RegisterType<UltravioletService>().AsSelf().InstancePerLifetimeScope();
 });
 
 var openAqApiUrl = Environment.GetEnvironmentVariable("OPEN_AQ_API_URL")
                    ?? throw new InvalidOperationException("OPEN_AQ_API_URL is not configured.");
 var openAqApiKey = Environment.GetEnvironmentVariable("OPEN_AQ_API_KEY")
                    ?? throw new InvalidOperationException("OPEN_AQ_API_KEY is not configured.");
+var openUvApiUrl = Environment.GetEnvironmentVariable("OPEN_UV_API_URL")
+                   ?? throw new InvalidOperationException("OPEN_UV_API_URL is not configured.");
+var openUvApiKey = Environment.GetEnvironmentVariable("OPEN_UV_API_KEY")
+                   ?? throw new InvalidOperationException("OPEN_UV_API_KEY is not configured.");
 
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient<OpenAqApiClient>(client =>
@@ -48,6 +54,12 @@ builder.Services.AddHttpClient<OpenAqApiClient>(client =>
     client.BaseAddress = new Uri(openAqApiUrl.TrimEnd('/') + "/");
     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     client.DefaultRequestHeaders.Add("X-API-Key", openAqApiKey);
+});
+builder.Services.AddHttpClient<OpenUvApiClient>(client =>
+{
+    client.BaseAddress = new Uri(openUvApiUrl.TrimEnd('/') + "/");
+    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    client.DefaultRequestHeaders.Add("x-access-token", openUvApiKey);
 });
 builder.Services
     .AddControllers()
@@ -73,7 +85,6 @@ builder.Services.AddOpenApi(options =>
 });
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
