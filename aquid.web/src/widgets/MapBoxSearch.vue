@@ -31,6 +31,7 @@
   import { debounce } from 'lodash'
   import { computed, ref, watch } from 'vue'
   import { aquidServices } from '@/entities/_global/aquid-services'
+  import { getZoomLevelFromSuggestion } from '@/entities/map'
   import { searchQueries } from '@/entities/search'
 
   const props = defineProps<{
@@ -68,7 +69,7 @@
     const { longitude, latitude } = feature.properties.coordinates
     props.map.flyTo({
       center: [longitude, latitude],
-      zoom: 10,
+      zoom: getZoomLevelFromSuggestion(suggestion),
       essential: true,
     })
   }
