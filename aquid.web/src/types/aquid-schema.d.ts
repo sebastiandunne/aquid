@@ -307,8 +307,7 @@ export interface components {
       instance?: null | string
     }
     UltravioletForecastMeta: {
-      /** Format: double */
-      max: number
+      max: null | components['schemas']['UltravioletForecastResult']
     }
     UltravioletForecastMetaResponse: {
       result: components['schemas']['UltravioletForecastResult'][]

@@ -683,9 +683,14 @@
         "type": "object",
         "properties": {
           "max": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
-            "type": "number",
-            "format": "double"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UltravioletForecastResult"
+              }
+            ]
           }
         }
       },

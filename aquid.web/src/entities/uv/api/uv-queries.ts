@@ -2,7 +2,7 @@ import type { UvService } from './uv-service'
 import type { LngLat } from '@/entities/map/@x/global'
 import type { components } from '@/types/aquid-schema'
 import type { Dayjs } from 'dayjs'
-import { type QueryKey, queryOptions, type UseQueryOptions } from '@tanstack/vue-query'
+import { keepPreviousData, type QueryKey, queryOptions, type UseQueryOptions } from '@tanstack/vue-query'
 import dayjs from 'dayjs'
 import { type MaybeRefOrGetter, toValue } from 'vue'
 import { aquidServices } from '@/entities/_global/aquid-services'
@@ -39,6 +39,7 @@ export class UvQueries extends QueryFactory<UvService> {
           throw new Error('Failed to fetch UV forecast for the given coordinates and date')
         }
       },
+      placeholderData: keepPreviousData,
       enabled: () => !!toValue(coordinates),
     })
   }

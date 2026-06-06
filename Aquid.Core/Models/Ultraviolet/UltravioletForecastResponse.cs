@@ -14,16 +14,15 @@ public record UltravioletForecastMetaResponse(
         ArgumentNullException.ThrowIfNull(result);
 
         var max = result.Result.MaxBy(r => r.Uv);
-        var maxValue = max?.Uv ?? 0;
 
         return new UltravioletForecastMetaResponse(
             result.Result,
-            new UltravioletForecastMeta(maxValue));
+            new UltravioletForecastMeta(max));
     }
 }
 
 public record UltravioletForecastMeta(
-    [property: JsonPropertyName("max")] double Max);
+    [property: JsonPropertyName("max")] UltravioletForecastResult? Max);
 
 public record UltravioletForecastResult(
     [property: JsonPropertyName("uv")] double Uv,

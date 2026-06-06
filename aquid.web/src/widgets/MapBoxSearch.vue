@@ -2,6 +2,11 @@
   <v-autocomplete
     v-model="selected"
     v-model:search="searchText"
+    class="
+      max-[450px]:left-2
+      max-[450px]:right-2
+      min-[450px]:min-w-97
+    "
     clearable
     density="compact"
     hide-details
@@ -11,7 +16,6 @@
     :loading="isFetching"
     no-filter
     return-object
-    style="min-width: 320px"
     variant="solo"
     @click:clear="resetSession"
     @update:model-value="onSelect"

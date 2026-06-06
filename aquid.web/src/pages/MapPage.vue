@@ -1,25 +1,23 @@
 <template>
-  <div class="h-full w-full">
+  <div class="map-ui-wrap h-full w-full">
     <MapBoxMap search-enabled />
+    <SelectionInfoWidget :data="data" :is-fetching="isFetching" />
   </div>
-
-  <MapDebugGui />
 </template>
 
 <script lang="ts" setup>
-  // import { useQuery } from '@tanstack/vue-query'
-  // import { storeToRefs } from 'pinia'
-  // import { watch } from 'vue'
+  import { useQuery } from '@tanstack/vue-query'
+  import { storeToRefs } from 'pinia'
+  import SelectionInfoWidget from '@/components/SelectionInfoWidget.vue'
   import {
-    // useMapStore,
+    useMapStore,
     useRouteSyncedCoords,
   } from '@/entities/map'
-  // import { uvQueries } from '@/entities/uv'
+  import { uvQueries } from '@/entities/uv'
   import MapBoxMap from '@/widgets/MapBoxMap.vue'
-  import MapDebugGui from '@/widgets/MapDebugGui.vue'
 
   useRouteSyncedCoords()
 
-  // const { lastClicked } = storeToRefs(useMapStore())
-  // const { data, isFetching } = useQuery(uvQueries.getForecast(lastClicked))
+  const { lastClicked } = storeToRefs(useMapStore())
+  const { data, isFetching } = useQuery(uvQueries.getForecast(lastClicked))
 </script>
