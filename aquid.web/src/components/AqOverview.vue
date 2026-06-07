@@ -40,7 +40,9 @@
 
 <script lang="ts" setup>
   import type { components } from '@/types/aquid-schema'
+  import dayjs from 'dayjs'
   import { computed, ref, watch } from 'vue'
+  import { formatDate } from '@/entities/_global/config/format-date'
 
   type AirQualityResponse = components['schemas']['AirQualityMeasurementsResponse']
   type AirQualityResult = AirQualityResponse['results'][number]
@@ -146,13 +148,7 @@
       return '--'
     }
 
-    return new Date(utcTime).toLocaleString([], {
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    })
+    return formatDate(utcTime)
   }
 
   function formatCoverage (result: AirQualityResult): string {
