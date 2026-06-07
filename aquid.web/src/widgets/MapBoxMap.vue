@@ -141,10 +141,13 @@
   }
 
   function syncMapTheme (map: mapboxgl.Map, nextTheme: string) {
-    const styleId = nextTheme === 'dark' ? 'mapbox/dark-v10' : 'mapbox/streets-v11'
-    const styleUrl = `mapbox://styles/${styleId}`
-
+    const styleUrl = getStyleUrlForTheme(nextTheme)
     map.setStyle(styleUrl)
+  }
+
+  function getStyleUrlForTheme (theme: string) {
+    const styleId = theme === 'dark' ? 'mapbox/dark-v10' : 'mapbox/streets-v11'
+    return `mapbox://styles/${styleId}?optimize=true`
   }
 
   watch(locations, newLocations => {
@@ -182,7 +185,7 @@
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
     const newMap = new mapboxgl.Map({
       container: mapContainer.value,
-      style: 'mapbox://styles/mapbox/streets-v11?optimize=true',
+      style: getStyleUrlForTheme(theme.value),
       center: [initialViewport.center.lng, initialViewport.center.lat],
       zoom: initialViewport.zoom,
     })

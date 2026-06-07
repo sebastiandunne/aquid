@@ -58,7 +58,7 @@
 
   const guiState = reactive<MapDebugGuiState>({
     language: 'en',
-    theme: 'light',
+    theme: 'dark',
     centerLng: DEFAULT_ROUTE_LNG,
     centerLat: DEFAULT_ROUTE_LAT,
     zoom: DEFAULT_ROUTE_ZOOM,

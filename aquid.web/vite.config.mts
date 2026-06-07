@@ -38,7 +38,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:5196',
+        target: 'https://aquid.sdunne.dev',
         changeOrigin: true,
       },
     },

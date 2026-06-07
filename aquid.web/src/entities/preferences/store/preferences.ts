@@ -11,7 +11,7 @@ const PREFERENCES_STORAGE_KEY = 'aquid.preferences'
 
 const DEFAULT_PREFERENCES: PreferencesStoreState = {
   language: 'en',
-  theme: 'light',
+  theme: 'dark',
 }
 
 function isLanguage (value: unknown): value is Language {
