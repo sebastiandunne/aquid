@@ -3,9 +3,12 @@
     v-model="selected"
     v-model:search="searchText"
     class="
+      mapbox-search-box
       max-[450px]:left-2
       max-[450px]:right-2
       min-[450px]:min-w-97
+      placeholder-black
+      dark:placeholder-white
     "
     clearable
     density="compact"
