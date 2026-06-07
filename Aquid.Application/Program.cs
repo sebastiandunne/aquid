@@ -11,6 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 LoadDotEnv(Path.Combine(builder.Environment.ContentRootPath, ".env"));
 
+var portValue = Environment.GetEnvironmentVariable("PORT")
+                ?? throw new InvalidOperationException("PORT is not configured.");
+if (!int.TryParse(portValue, out var port) || port is <= 0 or > 65535)
+{
+    throw new InvalidOperationException("PORT must be a valid integer between 1 and 65535.");
+}
+
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
