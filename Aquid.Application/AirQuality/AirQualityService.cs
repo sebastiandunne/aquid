@@ -85,4 +85,39 @@ public class AirQualityService
 
         return res;
     }
+
+    public async Task<AirQualityMeasurementsResponse> GetDailyMeasurementsBySensorAsync(
+        int sensorId,
+        DateTime? start,
+        DateTime? end,
+        CancellationToken cancellationToken)
+    {
+
+        var queryParts = new List<string>();
+        if (start.HasValue)
+        {
+            queryParts.Add($"date_from={Uri.EscapeDataString(start.Value.ToString("o"))}");
+        }
+        if (end.HasValue)
+        {
+            queryParts.Add($"date_to={Uri.EscapeDataString(end.Value.ToString("o"))}");
+        }
+        var endpoint = $"v3/sensors/{sensorId}/measurements/daily";
+        if (queryParts.Count > 0)
+        {
+            endpoint += "?" + string.Join("&", queryParts);
+        }
+        
+        // cache key can be just daily since that is the resolution of our measurements
+        var cacheKey = $"openuv:measurements:{sensorId}:start:{start?.ToString("yyyy-MM-dd")}:end:{end?.ToString("yyyy-MM-dd")}";
+        _logger.LogInformation("Requesting OpenAQ measurements for sensor {SensorId}", sensorId);
+
+        var res = await _openAqApiClient.GetJsonCachedAsync<AirQualityMeasurementsResponse>(
+            endpoint,
+            cacheKey,
+            cancellationToken);
+
+        return res;
+
+    }
 }

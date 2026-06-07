@@ -1,7 +1,12 @@
 <template>
   <div class="map-ui-wrap h-full w-full">
     <MapBoxMap search-enabled />
-    <SelectionInfoWidget :data="data" :is-fetching="isFetching" />
+
+    <SelectionInfoWidget
+      :aq-data="selectedLocation ?? undefined"
+      :is-fetching-uv="isFetchingUv"
+      :uv-data="uvData"
+    />
   </div>
 
   <MapDebugGui v-if="showDebugUi" />
@@ -12,6 +17,7 @@
   import { useRouteQuery } from '@vueuse/router'
   import { storeToRefs } from 'pinia'
   import SelectionInfoWidget from '@/components/SelectionInfoWidget.vue'
+  import { useLocationStore } from '@/entities/air-quality'
   import {
     useMapStore,
     useRouteSyncedCoords,
@@ -26,5 +32,8 @@
   useRouteSyncedCoords()
 
   const { lastClicked } = storeToRefs(useMapStore())
-  const { data, isFetching } = useQuery(uvQueries.getForecast(lastClicked))
+  const { data: uvData, isFetching: isFetchingUv } = useQuery(uvQueries.getForecast(lastClicked))
+
+  const { selectedLocation } = storeToRefs(useLocationStore())
+
 </script>

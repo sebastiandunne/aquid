@@ -62,5 +62,24 @@ public class AirQualityController : ControllerBase
 
         return Ok(result);
     }
-            
+
+    [HttpGet("sensor/{sensorId}/measurements")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(AirQualityMeasurementsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetDailyMeasurementsBySensor(
+        [FromRoute] int sensorId,
+        [FromQuery(Name = "date_from")] DateTime? start,
+        [FromQuery(Name = "date_to")] DateTime? end,
+        CancellationToken cancellationToken)
+    {
+
+        if (start.HasValue && end.HasValue && start > end)
+        {
+            return BadRequest("Start date must be earlier than end date.");
+        }
+
+        var result = await _airQualityService.GetDailyMeasurementsBySensorAsync(sensorId, start, end, cancellationToken);
+        return Ok(result);
+    }
 }

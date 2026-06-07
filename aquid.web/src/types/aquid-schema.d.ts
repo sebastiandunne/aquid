@@ -185,6 +185,55 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/AirQuality/sensor/{sensorId}/measurements': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get: {
+      parameters: {
+        query?: {
+          date_from?: string
+          date_to?: string
+        }
+        header?: never
+        path: {
+          sensorId: number
+        }
+        cookie?: never
+      }
+      requestBody?: never
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown
+          }
+          content: {
+            'application/json': components['schemas']['AirQualityMeasurementsResponse']
+          }
+        }
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown
+          }
+          content: {
+            'application/json': components['schemas']['ProblemDetails']
+          }
+        }
+      }
+    }
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -291,6 +340,66 @@ export interface components {
       meta: components['schemas']['AirQualityLocationMeta']
       results: components['schemas']['AirQualityLocation'][]
     }
+    AirQualityMeasurement: {
+      /** Format: double */
+      value: null | number
+      parameter: components['schemas']['AirQualityMeasurementParameter']
+      period: components['schemas']['AirQualityMeasurementPeriod']
+      coordinates: null | components['schemas']['AirQualityMeasurementCoordinates']
+      summary: null | components['schemas']['JsonElement']
+      coverage: components['schemas']['AirQualityMeasurementCoverage']
+    }
+    AirQualityMeasurementCoordinates: {
+      /** Format: double */
+      latitude: number
+      /** Format: double */
+      longitude: number
+    }
+    AirQualityMeasurementCoverage: {
+      /** Format: int32 */
+      expectedCount: number
+      expectedInterval: string
+      /** Format: int32 */
+      observedCount: number
+      observedInterval: string
+      /** Format: double */
+      percentComplete: number
+      /** Format: double */
+      percentCoverage: number
+      dateTimeFrom: components['schemas']['AirQualityMeasurementDateTime']
+      dateTimeTo: components['schemas']['AirQualityMeasurementDateTime']
+    }
+    AirQualityMeasurementDateTime: {
+      /** Format: date-time */
+      utc: string
+      /** Format: date-time */
+      local: string
+    }
+    AirQualityMeasurementMeta: {
+      name: string
+      website: string
+      /** Format: int32 */
+      page: number
+      /** Format: int32 */
+      limit: number
+    }
+    AirQualityMeasurementParameter: {
+      /** Format: int64 */
+      id: number
+      name: string
+      units: string
+      displayName: null | string
+    }
+    AirQualityMeasurementPeriod: {
+      label: string
+      interval: string
+      dateTimeFrom: components['schemas']['AirQualityMeasurementDateTime']
+      dateTimeTo: components['schemas']['AirQualityMeasurementDateTime']
+    }
+    AirQualityMeasurementsResponse: {
+      meta: components['schemas']['AirQualityMeasurementMeta']
+      results: components['schemas']['AirQualityMeasurement'][]
+    }
     AirQualityParameter: {
       /** Format: int64 */
       id: number
@@ -298,6 +407,7 @@ export interface components {
       units: string
       displayName: null | string
     }
+    JsonElement: unknown
     ProblemDetails: {
       type?: null | string
       title?: null | string

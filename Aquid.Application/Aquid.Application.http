@@ -17,3 +17,8 @@ Accept: application/json
 
 GET {{Aquid_Application_HostAddress}}/api/ultraviolet/forecast?lat=51.5&lng=-0.11
 Accept: application/json
+
+###
+
+GET {{Aquid_Application_HostAddress}}/api/airquality/sensor/4647/measurements?date_from=2024-01-01&date_to=2024-01-31
+Accept: application/json
