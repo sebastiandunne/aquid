@@ -72,7 +72,7 @@
     return lastClickedTime.value > locationTime.value ? 'uv' : 'aq'
   })
 
-  const hasData = computed(() => !!uvData.value /* || !!aqData.value */)
-  const isFetching = computed(() => isFetchingUv.value /* || isFetchingAq.value */)
+  const hasData = computed(() => !!uvData.value || !!aqData.value)
+  const isFetching = computed(() => isFetchingUv.value || isFetchingAq.value)
 
 </script>
