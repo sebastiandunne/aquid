@@ -17,8 +17,9 @@ export function useAirQualityLocationMeasurements ({
     combine: queries => {
       const isPending = queries.some(query => query.isPending)
       const isFetching = queries.some(query => query.isFetching)
-      const isError = queries.some(query => query.isError)
-      const error = queries.find(query => query.isError)?.error
+      const errorQuery = queries.find(query => query.isError)
+      const isError = errorQuery?.isError ?? false
+      const error = errorQuery?.error
 
       const data = queries.every(query => query.data)
         ? queries.map(query => query.data!)
