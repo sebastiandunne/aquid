@@ -11,7 +11,7 @@
       max-w-100
       p-4
       bg-white/90
-      dark:bg-gray-800/90
+      dark:bg-[#212121]/90
       border
       border-gray-300
       dark:border-gray-600
@@ -22,28 +22,26 @@
       max-[450px]:bottom-0
       max-[450px]:max-w-none
       max-[450px]:w-full
-      px-0
-      pt-0
     "
     elevation="2"
     rounded
   >
-    <div class="h-4 w-full flex items-start justify-center m-0">
-      <v-progress-linear v-if="props.isFetching" color="primary" indeterminate />
+    <div v-if="props.isFetching" class="h-4 w-full absolute top-0 left-0">
+      <v-progress-linear color="primary" indeterminate />
     </div>
 
     <!-- loading overlay -->
     <div
       v-if="props.isFetching"
-      class="absolute inset-0 bg-gray-200/50 dark:bg-gray-700/50 z-10"
+      class="absolute inset-0 bg-gray-200/50 dark:bg-[#212121]/50 z-2"
     />
 
-    <div v-if="props.hasData">
+    <div v-if="props.hasData" class="h-full w-full">
       <slot />
     </div>
 
     <div v-else class="h-full w-full flex items-center justify-center">
-      <p class="text-sm text-gray-500">Click or tap on the map to see data</p>
+      <p class="text-sm text-gray-300">Click or tap on the map to see data</p>
     </div>
 
   </v-sheet>

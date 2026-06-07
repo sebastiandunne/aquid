@@ -2,7 +2,7 @@ import type { AirQualityService } from './air-quality-service'
 import type { MapBounds } from '@/entities/map/@x/air-quality'
 import type { components } from '@/types/aquid-schema'
 import type { Dayjs } from 'dayjs'
-import { type QueryKey, queryOptions, type UseQueryOptions } from '@tanstack/vue-query'
+import { keepPreviousData, type QueryKey, queryOptions, type UseQueryOptions } from '@tanstack/vue-query'
 import { type MaybeRefOrGetter, toValue } from 'vue'
 import { QueryFactory } from '@/shared/services/base-query-factory'
 import { aquidServices } from '../../_global/aquid-services'
@@ -49,6 +49,7 @@ export class AirQualityQueries extends QueryFactory<AirQualityService> {
         }
       },
       enabled: () => !!toValue(bounds),
+      placeholderData: keepPreviousData,
     })
   }
 
@@ -73,6 +74,7 @@ export class AirQualityQueries extends QueryFactory<AirQualityService> {
         }
       },
       enabled: () => !!toValue(sensorId),
+      placeholderData: keepPreviousData,
     })
   }
 }

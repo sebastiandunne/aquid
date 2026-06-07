@@ -5,13 +5,21 @@
  */
 
 import { createVuetify } from 'vuetify'
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 import '../styles/layers.css'
 import 'vuetify/styles'
 
 export default createVuetify({
   theme: {
-    defaultTheme: 'system',
+    defaultTheme: 'dark',
     utilities: false,
+  },
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    },
   },
   display: {
     mobileBreakpoint: 'md',
