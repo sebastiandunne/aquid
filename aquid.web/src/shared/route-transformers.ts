@@ -14,3 +14,12 @@ export function routeTransformNumber (significantDigits = 0) {
     },
   }
 }
+
+export function routeTransformBoolean () {
+  return {
+    transform: {
+      get: (value: string) => value === 'true',
+      set: (value: unknown) => value === true ? 'true' : 'false',
+    },
+  }
+}

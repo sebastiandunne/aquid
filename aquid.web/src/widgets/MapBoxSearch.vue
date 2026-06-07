@@ -35,13 +35,15 @@
   import { debounce } from 'lodash'
   import { computed, ref, watch } from 'vue'
   import { aquidServices } from '@/entities/_global/aquid-services'
-  import { getZoomLevelFromSuggestion } from '@/entities/map'
+  import { getZoomLevelFromSuggestion, useMapStore } from '@/entities/map'
   import { searchQueries } from '@/entities/search'
 
   const props = defineProps<{
     token: string
     map: mapboxgl.Map | null
   }>()
+
+  const mapStore = useMapStore()
 
   const searchText = ref('')
   const debouncedSearchText = ref('')
@@ -76,5 +78,6 @@
       zoom: getZoomLevelFromSuggestion(suggestion),
       essential: true,
     })
+    mapStore.setLastClicked({ lng: longitude, lat: latitude })
   }
 </script>

@@ -23,8 +23,8 @@
   import mapboxgl from 'mapbox-gl'
   import { storeToRefs } from 'pinia'
   import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
-  import { useAirQualityLocations } from '@/entities/air-quality'
-  import { DEFAULT_SYNC_DEBOUNCE, MapPinHandler, type MapViewport, useMapStore } from '@/entities/map'
+  import { useAirQualityLocations, useLocationStore } from '@/entities/air-quality'
+  import { type AirQualityMapLocation, DEFAULT_SYNC_DEBOUNCE, MapPinHandler, type MapViewport, useMapStore } from '@/entities/map'
   import { usePreferencesStore } from '@/entities/preferences'
   import MapBoxSearch from './MapBoxSearch.vue'
   import 'mapbox-gl/dist/mapbox-gl.css'
@@ -40,6 +40,7 @@
   const map = shallowRef<mapboxgl.Map | null>(null)
   const mapPinHandler = shallowRef<MapPinHandler | null>(null)
   const mapStore = useMapStore()
+  const locationStore = useLocationStore()
   const preferencesStore = usePreferencesStore()
 
   const { bounds } = storeToRefs(mapStore)
@@ -128,6 +129,10 @@
     instance.on('click', handleClick)
   }
 
+  function handleNewLocationSelected (location: AirQualityMapLocation) {
+    locationStore.setSelectedLocation(location)
+  }
+
   function syncMapLanguage (map: mapboxgl.Map, nextLanguage: string) {
     if (map.getLanguage() === nextLanguage) {
       return
@@ -189,14 +194,18 @@
 
     map.value = newMap
     mapPinHandler.value = new MapPinHandler(newMap)
+    mapPinHandler.value.on('newLocationSelected', handleNewLocationSelected)
     mapPinHandler.value.setLocations(locations.value)
   })
 
   onUnmounted(() => {
     syncViewportToStoreDebounced.cancel()
 
-    mapPinHandler.value?.clear()
-    mapPinHandler.value = null
+    if (mapPinHandler.value) {
+      mapPinHandler.value.off('newLocationSelected', handleNewLocationSelected)
+      mapPinHandler.value.clear()
+      mapPinHandler.value = null
+    }
 
     if (map.value) {
       map.value.remove()

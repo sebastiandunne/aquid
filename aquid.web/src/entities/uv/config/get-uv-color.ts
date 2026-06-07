@@ -2,7 +2,7 @@ export function getUvColor (uvIndex: number) {
   if (uvIndex < 0) {
     return '#000000'
   }
-  if (uvIndex < 3) {
+  if (uvIndex < 2) {
     return '#3EA72D'
   }
   if (uvIndex < 6) {

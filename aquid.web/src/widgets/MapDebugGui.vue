@@ -9,6 +9,7 @@
   import GUI from 'lil-gui'
   import { storeToRefs } from 'pinia'
   import { onMounted, onUnmounted, reactive, useTemplateRef, watch } from 'vue'
+  import { useLocationStore } from '@/entities/air-quality'
   import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM, useMapStore } from '@/entities/map'
   import {
     type Language,
@@ -30,11 +31,24 @@
     boundsNorthEastLat?: number
     boundsSouthWestLng?: number
     boundsSouthWestLat?: number
+    locationId: number | string
+    locationName: string
+    locationLocality: string
+    locationCountryCode: string
+    locationCountryName: string
+    locationTimezone: string
+    locationProvider: string
+    locationCoordinatesLng: number | string
+    locationCoordinatesLat: number | string
+    locationSensorCount: number
+    locationInstrumentCount: number
   }
 
   const mapStore = useMapStore()
+  const locationStore = useLocationStore()
   const preferencesStore = usePreferencesStore()
   const { center, zoom, lastClicked, bounds } = storeToRefs(mapStore)
+  const { selectedLocation } = storeToRefs(locationStore)
   const { language, theme } = storeToRefs(preferencesStore)
 
   const guiContainer = useTemplateRef('guiContainer')
@@ -51,6 +65,17 @@
     boundsNorthEastLat: 0,
     boundsSouthWestLng: 0,
     boundsSouthWestLat: 0,
+    locationId: '-',
+    locationName: '-',
+    locationLocality: '-',
+    locationCountryCode: '-',
+    locationCountryName: '-',
+    locationTimezone: '-',
+    locationProvider: '-',
+    locationCoordinatesLng: '-',
+    locationCoordinatesLat: '-',
+    locationSensorCount: 0,
+    locationInstrumentCount: 0,
   })
 
   let gui: GUI | null = null
@@ -70,6 +95,32 @@
     guiState.boundsNorthEastLat = bounds?.value?.northeast.lat
     guiState.boundsSouthWestLng = bounds?.value?.southwest.lng
     guiState.boundsSouthWestLat = bounds?.value?.southwest.lat
+
+    if (selectedLocation.value) {
+      guiState.locationId = selectedLocation.value.id
+      guiState.locationName = selectedLocation.value.name
+      guiState.locationLocality = selectedLocation.value.locality ?? '-'
+      guiState.locationCountryCode = selectedLocation.value.country.code
+      guiState.locationCountryName = selectedLocation.value.country.name
+      guiState.locationTimezone = selectedLocation.value.timezone
+      guiState.locationProvider = selectedLocation.value.provider.name
+      guiState.locationCoordinatesLng = formatCoord(selectedLocation.value.coordinates.longitude)
+      guiState.locationCoordinatesLat = formatCoord(selectedLocation.value.coordinates.latitude)
+      guiState.locationSensorCount = selectedLocation.value.sensors?.length ?? 0
+      guiState.locationInstrumentCount = selectedLocation.value.instruments?.length ?? 0
+    } else {
+      guiState.locationId = '-'
+      guiState.locationName = '-'
+      guiState.locationLocality = '-'
+      guiState.locationCountryCode = '-'
+      guiState.locationCountryName = '-'
+      guiState.locationTimezone = '-'
+      guiState.locationProvider = '-'
+      guiState.locationCoordinatesLng = '-'
+      guiState.locationCoordinatesLat = '-'
+      guiState.locationSensorCount = 0
+      guiState.locationInstrumentCount = 0
+    }
 
     if (!lastClicked.value) {
       guiState.clickLng = '-'
@@ -99,6 +150,7 @@
     const viewportFolder = gui.addFolder('Viewport')
     const clickFolder = gui.addFolder('Last Click')
     const boundsFolder = gui.addFolder('Bounds')
+    const locationFolder = gui.addFolder('Selected Location')
 
     preferencesFolder
       .add(guiState, 'language', [...LANGUAGE_OPTIONS])
@@ -155,6 +207,51 @@
       .name('southwest.lat')
       .listen()
 
+    const locationIdController = locationFolder
+      .add(guiState, 'locationId')
+      .name('id')
+      .listen()
+    const locationNameController = locationFolder
+      .add(guiState, 'locationName')
+      .name('name')
+      .listen()
+    const locationLocalityController = locationFolder
+      .add(guiState, 'locationLocality')
+      .name('locality')
+      .listen()
+    const locationCountryCodeController = locationFolder
+      .add(guiState, 'locationCountryCode')
+      .name('country.code')
+      .listen()
+    const locationCountryNameController = locationFolder
+      .add(guiState, 'locationCountryName')
+      .name('country.name')
+      .listen()
+    const locationTimezoneController = locationFolder
+      .add(guiState, 'locationTimezone')
+      .name('timezone')
+      .listen()
+    const locationProviderController = locationFolder
+      .add(guiState, 'locationProvider')
+      .name('provider')
+      .listen()
+    const locationCoordinatesLngController = locationFolder
+      .add(guiState, 'locationCoordinatesLng')
+      .name('coordinates.lng')
+      .listen()
+    const locationCoordinatesLatController = locationFolder
+      .add(guiState, 'locationCoordinatesLat')
+      .name('coordinates.lat')
+      .listen()
+    const locationSensorCountController = locationFolder
+      .add(guiState, 'locationSensorCount')
+      .name('sensorCount')
+      .listen()
+    const locationInstrumentCountController = locationFolder
+      .add(guiState, 'locationInstrumentCount')
+      .name('instrumentCount')
+      .listen()
+
     disableControllers([
       centerLngController,
       centerLatController,
@@ -165,10 +262,21 @@
       boundsNorthEastLatController,
       boundsSouthWestLngController,
       boundsSouthWestLatController,
+      locationIdController,
+      locationNameController,
+      locationLocalityController,
+      locationCountryCodeController,
+      locationCountryNameController,
+      locationTimezoneController,
+      locationProviderController,
+      locationCoordinatesLngController,
+      locationCoordinatesLatController,
+      locationSensorCountController,
+      locationInstrumentCountController,
     ])
 
     syncStateFromStore()
-    stopSync = watch([language, theme, center, zoom, lastClicked, bounds], syncStateFromStore, {
+    stopSync = watch([language, theme, center, zoom, lastClicked, bounds, selectedLocation], syncStateFromStore, {
       deep: true,
     })
   })

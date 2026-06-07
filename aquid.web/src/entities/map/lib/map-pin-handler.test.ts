@@ -208,6 +208,36 @@ describe('MapPinHandler', () => {
     expect(temporaryMarker?.removed).toBe(true)
   })
 
+  it('emits newLocationSelected when selecting a different marker', () => {
+    const map = createMapMock()
+    const handler = new MapPinHandler(map as never)
+    const firstLocation = createLocation(1, 10, 20)
+    const secondLocation = createLocation(2, 30, 40)
+    const locationSelectedListener = vi.fn()
+
+    handler.on('newLocationSelected', locationSelectedListener)
+    handler.setLocations([firstLocation, secondLocation])
+
+    const firstMarker = markerState.instances[0]
+    const secondMarker = markerState.instances[1]
+
+    if (firstMarker) {
+      clickElement(firstMarker.element)
+    }
+
+    if (secondMarker) {
+      clickElement(secondMarker.element)
+    }
+
+    if (secondMarker) {
+      clickElement(secondMarker.element)
+    }
+
+    expect(locationSelectedListener).toHaveBeenCalledTimes(2)
+    expect(locationSelectedListener).toHaveBeenNthCalledWith(1, firstLocation)
+    expect(locationSelectedListener).toHaveBeenNthCalledWith(2, secondLocation)
+  })
+
   it('reuses the same temporary pin on repeated empty-map clicks', () => {
     const map = createMapMock()
     const handler = new MapPinHandler(map as never)

@@ -2,6 +2,7 @@ import type { components } from '@/types/aquid-schema'
 import mapboxgl from 'mapbox-gl'
 
 export type AirQualityMapLocation = components['schemas']['AirQualityLocation']
+type NewLocationSelectedListener = (location: AirQualityMapLocation) => void
 
 const DEFAULT_MARKER_COLOR = '#3FB1CE'
 const SELECTED_MARKER_COLOR = '#ff0000'
@@ -10,6 +11,7 @@ export class MapPinHandler {
   private readonly map: mapboxgl.Map
   private readonly markersByLocationKey = new Map<string, mapboxgl.Marker>()
   private readonly locationsByKey = new Map<string, AirQualityMapLocation>()
+  private readonly newLocationSelectedListeners = new Set<NewLocationSelectedListener>()
   private temporaryMarker: mapboxgl.Marker | null = null
   private selectedLocationKey: string | null = null
   private readonly handleMapClick: (event: mapboxgl.MapMouseEvent) => void
@@ -48,6 +50,9 @@ export class MapPinHandler {
     }
 
     for (const [locationKey, marker] of this.markersByLocationKey.entries()) {
+      if (this.selectedLocationKey === locationKey) {
+        continue
+      }
       if (nextLocationKeys.has(locationKey)) {
         if (locationKey === this.selectedLocationKey) {
           this.setMarkerColor(marker, SELECTED_MARKER_COLOR)
@@ -78,7 +83,16 @@ export class MapPinHandler {
 
     this.markersByLocationKey.clear()
     this.locationsByKey.clear()
+    this.newLocationSelectedListeners.clear()
     this.selectedLocationKey = null
+  }
+
+  on (eventName: 'newLocationSelected', listener: NewLocationSelectedListener) {
+    this.newLocationSelectedListeners.add(listener)
+  }
+
+  off (eventName: 'newLocationSelected', listener: NewLocationSelectedListener) {
+    this.newLocationSelectedListeners.delete(listener)
   }
 
   private getLocationKey (location: AirQualityMapLocation) {
@@ -106,6 +120,13 @@ export class MapPinHandler {
 
     this.selectedLocationKey = locationKey
     this.setMarkerColor(this.markersByLocationKey.get(locationKey), SELECTED_MARKER_COLOR)
+    this.emitNewLocationSelected(location)
+  }
+
+  private emitNewLocationSelected (location: AirQualityMapLocation) {
+    for (const listener of this.newLocationSelectedListeners) {
+      listener(location)
+    }
   }
 
   private selectTemporaryMarker (lngLat: [number, number]) {
