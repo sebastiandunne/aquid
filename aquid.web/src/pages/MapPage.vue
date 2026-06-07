@@ -8,13 +8,15 @@
     >
       <UvOverview
         v-if="selectedPanel === 'uv'"
-        :is-fetching-uv="isFetchingUv"
+        :is-fetching="isFetchingUv"
         :uv-data="uvData"
       />
 
-      <div v-else>
-        {{ aqData }}
-      </div>
+      <AqOverview
+        v-else-if="selectedPanel === 'aq'"
+        :aq-data="aqData"
+        :is-fetching="isFetchingAq"
+      />
     </SelectionInfoWidget>
   </div>
 
@@ -25,7 +27,8 @@
   import { useQuery } from '@tanstack/vue-query'
   import { useRouteQuery } from '@vueuse/router'
   import { storeToRefs } from 'pinia'
-  import { computed, watch } from 'vue'
+  import { computed } from 'vue'
+  import AqOverview from '@/components/AqOverview.vue'
   import SelectionInfoWidget from '@/components/SelectionInfoWidget.vue'
   import UvOverview from '@/components/UvOverview.vue'
   import { useAirQualityLocationMeasurements, useLocationStore } from '@/entities/air-quality'

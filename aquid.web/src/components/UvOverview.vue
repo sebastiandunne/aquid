@@ -1,7 +1,7 @@
 <template>
   <!-- loading overlay -->
   <div
-    v-if="props.isFetchingUv"
+    v-if="props.isFetching"
     class="absolute inset-0 bg-gray-200/50 dark:bg-gray-700/50 z-10"
   />
 
@@ -25,6 +25,6 @@
 
   const props = defineProps<{
     uvData?: components['schemas']['UltravioletForecastMetaResponse']
-    isFetchingUv?: boolean
+    isFetching?: boolean
   }>()
 </script>

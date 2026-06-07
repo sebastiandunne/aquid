@@ -1,5 +1,5 @@
 import type { AirQualityLocation } from '../model/location'
-import { useQueries, useQuery } from '@tanstack/vue-query'
+import { useQueries } from '@tanstack/vue-query'
 import { computed, type MaybeRefOrGetter, toValue } from 'vue'
 import { airQualityQueries } from '../api/air-quality-queries'
 
