@@ -1,8 +1,7 @@
-import type { components } from '@/types/aquid-schema'
+import type { AirQualityLocation } from '@/entities/air-quality/@x/map/location'
 import mapboxgl from 'mapbox-gl'
 
-export type AirQualityMapLocation = components['schemas']['AirQualityLocation']
-type NewLocationSelectedListener = (location: AirQualityMapLocation) => void
+type NewLocationSelectedListener = (location: AirQualityLocation) => void
 
 const DEFAULT_MARKER_COLOR = '#3FB1CE'
 const SELECTED_MARKER_COLOR = '#ff0000'
@@ -10,7 +9,7 @@ const SELECTED_MARKER_COLOR = '#ff0000'
 export class MapPinHandler {
   private readonly map: mapboxgl.Map
   private readonly markersByLocationKey = new Map<string, mapboxgl.Marker>()
-  private readonly locationsByKey = new Map<string, AirQualityMapLocation>()
+  private readonly locationsByKey = new Map<string, AirQualityLocation>()
   private readonly newLocationSelectedListeners = new Set<NewLocationSelectedListener>()
   private temporaryMarker: mapboxgl.Marker | null = null
   private selectedLocationKey: string | null = null
@@ -25,7 +24,7 @@ export class MapPinHandler {
     this.map.on('click', this.handleMapClick)
   }
 
-  setLocations (newLocations: AirQualityMapLocation[]) {
+  setLocations (newLocations: AirQualityLocation[]) {
     const nextLocationKeys = new Set<string>()
 
     for (const location of newLocations) {
@@ -95,7 +94,7 @@ export class MapPinHandler {
     this.newLocationSelectedListeners.delete(listener)
   }
 
-  private getLocationKey (location: AirQualityMapLocation) {
+  private getLocationKey (location: AirQualityLocation) {
     return `location.${location.id}`
   }
 
@@ -123,7 +122,7 @@ export class MapPinHandler {
     this.emitNewLocationSelected(location)
   }
 
-  private emitNewLocationSelected (location: AirQualityMapLocation) {
+  private emitNewLocationSelected (location: AirQualityLocation) {
     for (const listener of this.newLocationSelectedListeners) {
       listener(location)
     }

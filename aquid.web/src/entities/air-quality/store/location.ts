@@ -1,7 +1,5 @@
-import type { components } from '@/types/aquid-schema'
+import type { AirQualityLocation } from '../model/location'
 import { defineStore } from 'pinia'
-
-type AirQualityLocation = components['schemas']['AirQualityLocation']
 
 type LocationStoreState = {
   selectedLocation: AirQualityLocation | null

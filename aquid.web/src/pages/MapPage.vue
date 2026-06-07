@@ -3,10 +3,14 @@
     <MapBoxMap search-enabled />
 
     <SelectionInfoWidget
-      :aq-data="selectedLocation ?? undefined"
-      :is-fetching-uv="isFetchingUv"
-      :uv-data="uvData"
-    />
+      :has-data="hasData"
+      :is-fetching="isFetching"
+    >
+      <UvOverview
+        :is-fetching-uv="isFetchingUv"
+        :uv-data="uvData"
+      />
+    </SelectionInfoWidget>
   </div>
 
   <MapDebugGui v-if="showDebugUi" />
@@ -16,8 +20,10 @@
   import { useQuery } from '@tanstack/vue-query'
   import { useRouteQuery } from '@vueuse/router'
   import { storeToRefs } from 'pinia'
+  import { computed } from 'vue'
   import SelectionInfoWidget from '@/components/SelectionInfoWidget.vue'
-  import { useLocationStore } from '@/entities/air-quality'
+  import UvOverview from '@/components/UvOverview.vue'
+  import { useAirQualityLocationMeasurements, useLocationStore } from '@/entities/air-quality'
   import {
     useMapStore,
     useRouteSyncedCoords,
@@ -35,5 +41,11 @@
   const { data: uvData, isFetching: isFetchingUv } = useQuery(uvQueries.getForecast(lastClicked))
 
   const { selectedLocation } = storeToRefs(useLocationStore())
+  const { data: aqData, isFetching: isFetchingAq } = useAirQualityLocationMeasurements({
+    location: selectedLocation,
+  })
+
+  const hasData = computed(() => !!uvData.value /* || !!aqData.value */)
+  const isFetching = computed(() => isFetchingUv.value /* || isFetchingAq.value */)
 
 </script>

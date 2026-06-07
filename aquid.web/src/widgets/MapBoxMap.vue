@@ -23,8 +23,8 @@
   import mapboxgl from 'mapbox-gl'
   import { storeToRefs } from 'pinia'
   import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
-  import { useAirQualityLocations, useLocationStore } from '@/entities/air-quality'
-  import { type AirQualityMapLocation, DEFAULT_SYNC_DEBOUNCE, MapPinHandler, type MapViewport, useMapStore } from '@/entities/map'
+  import { type AirQualityLocation, useAirQualityLocations, useLocationStore } from '@/entities/air-quality'
+  import { DEFAULT_SYNC_DEBOUNCE, MapPinHandler, type MapViewport, useMapStore } from '@/entities/map'
   import { usePreferencesStore } from '@/entities/preferences'
   import MapBoxSearch from './MapBoxSearch.vue'
   import 'mapbox-gl/dist/mapbox-gl.css'
@@ -129,7 +129,7 @@
     instance.on('click', handleClick)
   }
 
-  function handleNewLocationSelected (location: AirQualityMapLocation) {
+  function handleNewLocationSelected (location: AirQualityLocation) {
     locationStore.setSelectedLocation(location)
   }
 

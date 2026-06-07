@@ -1,4 +1,4 @@
-import type { AirQualityMapLocation } from './map-pin-handler'
+import type { AirQualityLocation } from './map-pin-handler'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MapPinHandler } from './map-pin-handler'
 
@@ -129,14 +129,14 @@ describe('MapPinHandler', () => {
     }
   }
 
-  function createLocation (id: number, longitude: number, latitude: number): AirQualityMapLocation {
+  function createLocation (id: number, longitude: number, latitude: number): AirQualityLocation {
     return {
       id,
       coordinates: {
         longitude,
         latitude,
       },
-    } as AirQualityMapLocation
+    } as AirQualityLocation
   }
 
   it('adds markers for all new locations', () => {

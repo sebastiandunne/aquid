@@ -1,6 +1,7 @@
 import type { AirQualityService } from './air-quality-service'
 import type { MapBounds } from '@/entities/map/@x/air-quality'
 import type { components } from '@/types/aquid-schema'
+import type { Dayjs } from 'dayjs'
 import { type QueryKey, queryOptions, type UseQueryOptions } from '@tanstack/vue-query'
 import { type MaybeRefOrGetter, toValue } from 'vue'
 import { QueryFactory } from '@/shared/services/base-query-factory'
@@ -48,6 +49,30 @@ export class AirQualityQueries extends QueryFactory<AirQualityService> {
         }
       },
       enabled: () => !!toValue(bounds),
+    })
+  }
+
+  getDailyMeasurements (sensorId: MaybeRefOrGetter<number | undefined>, dateFrom?: MaybeRefOrGetter<string | Dayjs>, dateTo?: MaybeRefOrGetter<string | Dayjs>): UseQueryOptions<components['schemas']['AirQualityMeasurementsResponse']> {
+    return queryOptions({
+      queryKey: [...this.all, 'measurements', sensorId, dateFrom, dateTo] as QueryKey,
+      queryFn: async () => {
+        const deRefSensorId = toValue(sensorId)
+        const deRefDateFrom = toValue(dateFrom)
+        const deRefDateTo = toValue(dateTo)
+
+        if (!deRefSensorId) {
+          throw new Error('Sensor ID is required to fetch measurements')
+        }
+
+        const response = await this.service.getMeasurements(deRefSensorId, deRefDateFrom, deRefDateTo)
+
+        if (response.data) {
+          return response.data as components['schemas']['AirQualityMeasurementsResponse']
+        } else {
+          throw new Error(`Failed to fetch measurements for sensor ID: ${deRefSensorId} and date range: ${deRefDateFrom} - ${deRefDateTo}`)
+        }
+      },
+      enabled: () => !!toValue(sensorId),
     })
   }
 }
