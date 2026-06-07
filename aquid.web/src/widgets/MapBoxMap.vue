@@ -182,7 +182,7 @@
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
     const newMap = new mapboxgl.Map({
       container: mapContainer.value,
-      style: 'mapbox://styles/mapbox/streets-v11',
+      style: 'mapbox://styles/mapbox/streets-v11?optimize=true',
       center: [initialViewport.center.lng, initialViewport.center.lat],
       zoom: initialViewport.zoom,
     })
