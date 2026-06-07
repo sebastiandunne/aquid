@@ -1,4 +1,4 @@
-import type { AirQualityLocation } from './map-pin-handler'
+import type { AirQualityLocation } from '@/entities/air-quality'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MapPinHandler } from './map-pin-handler'
 
