@@ -48,7 +48,13 @@ public abstract class BaseApiClient
 			_logger.LogInformation("{ClientName} cache miss for {CacheKey}; requesting {RelativePath}", clientName, cacheKey, relativePath);
 
 			using var response = await _httpClient.GetAsync(relativePath, cancellationToken);
-			response.EnsureSuccessStatusCode();
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new HttpRequestException(
+					$"{clientName} returned {(int)response.StatusCode} ({response.ReasonPhrase}) for '{relativePath}'.",
+					null,
+					response.StatusCode);
+			}
 
 			await using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
 			var payload = await JsonSerializer.DeserializeAsync<T>(responseStream, JsonSerializerOptions, cancellationToken);

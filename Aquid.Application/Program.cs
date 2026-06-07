@@ -3,6 +3,7 @@ using Autofac.Extensions.DependencyInjection;
 using Aquid.Application.AirQuality;
 using Aquid.Application.Ultraviolet;
 using Aquid.Application.Weather;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.OpenApi;
 using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
@@ -93,6 +94,23 @@ builder.Services.AddOpenApi(options =>
     });
 });
 var app = builder.Build();
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+        var exception = exceptionFeature?.Error;
+
+        if (exception is HttpRequestException httpRequestException && httpRequestException.StatusCode.HasValue)
+        {
+            context.Response.StatusCode = (int)httpRequestException.StatusCode.Value;
+            return;
+        }
+
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    });
+});
 
 if (app.Environment.IsDevelopment())
 {
