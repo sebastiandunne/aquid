@@ -30,4 +30,56 @@ public class AirQualityController : ControllerBase
         var result = await _airQualityService.GetCountryDataAsync(isoCountryCode, cancellationToken);
         return Ok(result);
     }
+    
+    [HttpGet("locations")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(AirQualityLocationsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<AirQualityLocationsResponse>> GetLocationsInBoundingBox(
+        [FromQuery(Name = "ne_lat")] double neLat,
+        [FromQuery(Name = "ne_lng")] double neLong,
+        [FromQuery(Name = "sw_lat")] double swLat,
+        [FromQuery(Name = "sw_lng")] double swLong,
+        CancellationToken cancellationToken
+    )
+    {
+        if (neLat < -90 || neLat > 90 || swLat < -90 || swLat > 90)
+        {
+            return BadRequest("Latitude values must be between -90 and 90.");
+        }
+        if (neLong < -180 || neLong > 180 || swLong < -180 || swLong > 180)
+        {
+            return BadRequest("Longitude values must be between -180 and 180.");
+        }
+        if (neLat <= swLat)        {
+            return BadRequest("Northeast latitude must be greater than southwest latitude.");
+        }
+        if (neLong <= swLong)        {
+            return BadRequest("Northeast longitude must be greater than southwest longitude.");
+        }
+        var boundingBox = new BoundingBox(neLat, neLong, swLat, swLong);
+        var result = await _airQualityService.GetLocationsInBoundingBoxAsync(boundingBox, cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpGet("sensor/{sensorId}/measurements")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(AirQualityMeasurementsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetDailyMeasurementsBySensor(
+        [FromRoute] int sensorId,
+        [FromQuery(Name = "date_from")] DateTime? start,
+        [FromQuery(Name = "date_to")] DateTime? end,
+        CancellationToken cancellationToken)
+    {
+
+        if (start.HasValue && end.HasValue && start > end)
+        {
+            return BadRequest("Start date must be earlier than end date.");
+        }
+
+        var result = await _airQualityService.GetDailyMeasurementsBySensorAsync(sensorId, start, end, cancellationToken);
+        return Ok(result);
+    }
 }

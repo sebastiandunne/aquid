@@ -67,4 +67,57 @@ public class AirQualityService
             ? new AirQualityCountryResponse(Array.Empty<AirQualityCountry>())
             : new AirQualityCountryResponse(new[] { match });
     }
+
+    public async Task<AirQualityLocationsResponse> GetLocationsInBoundingBoxAsync(
+        BoundingBox boundingBox,
+        CancellationToken cancellationToken)
+    {
+        var bbox = boundingBox.ToOpenAqBboxQueryValue();
+        var endpoint = $"v3/locations?bbox={bbox}";
+        var cacheKey = $"openaq:locations:bbox:{bbox}";
+
+        _logger.LogInformation("Requesting OpenAQ locations for bbox {BoundingBox}", bbox);
+
+        var res = await _openAqApiClient.GetJsonCachedAsync<AirQualityLocationsResponse>(
+            endpoint,
+            cacheKey,
+            cancellationToken);
+
+        return res;
+    }
+
+    public async Task<AirQualityMeasurementsResponse> GetDailyMeasurementsBySensorAsync(
+        int sensorId,
+        DateTime? start,
+        DateTime? end,
+        CancellationToken cancellationToken)
+    {
+
+        var queryParts = new List<string>();
+        if (start.HasValue)
+        {
+            queryParts.Add($"date_from={Uri.EscapeDataString(start.Value.ToString("o"))}");
+        }
+        if (end.HasValue)
+        {
+            queryParts.Add($"date_to={Uri.EscapeDataString(end.Value.ToString("o"))}");
+        }
+        var endpoint = $"v3/sensors/{sensorId}/measurements/daily";
+        if (queryParts.Count > 0)
+        {
+            endpoint += "?" + string.Join("&", queryParts);
+        }
+        
+        // cache key can be just daily since that is the resolution of our measurements
+        var cacheKey = $"openuv:measurements:{sensorId}:start:{start?.ToString("yyyy-MM-dd")}:end:{end?.ToString("yyyy-MM-dd")}";
+        _logger.LogInformation("Requesting OpenAQ measurements for sensor {SensorId}", sensorId);
+
+        var res = await _openAqApiClient.GetJsonCachedAsync<AirQualityMeasurementsResponse>(
+            endpoint,
+            cacheKey,
+            cancellationToken);
+
+        return res;
+
+    }
 }

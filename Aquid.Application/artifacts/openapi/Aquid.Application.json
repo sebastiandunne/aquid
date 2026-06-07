@@ -43,6 +43,71 @@
         }
       }
     },
+    "/api/Ultraviolet/forecast": {
+      "get": {
+        "tags": [
+          "Ultraviolet"
+        ],
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "alt",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dt",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UltravioletForecastMetaResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/AirQuality/countries/{isoCountryCode}": {
       "get": {
         "tags": [
@@ -81,6 +146,130 @@
           }
         }
       }
+    },
+    "/api/AirQuality/locations": {
+      "get": {
+        "tags": [
+          "AirQuality"
+        ],
+        "parameters": [
+          {
+            "name": "ne_lat",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "ne_lng",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "sw_lat",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "sw_lng",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "type": "number",
+              "format": "double"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirQualityLocationsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/AirQuality/sensor/{sensorId}/measurements": {
+      "get": {
+        "tags": [
+          "AirQuality"
+        ],
+        "parameters": [
+          {
+            "name": "sensorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirQualityMeasurementsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -98,10 +287,7 @@
         "properties": {
           "id": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
+            "type": "integer",
             "format": "int64"
           },
           "code": {
@@ -146,7 +332,276 @@
           }
         }
       },
-      "AirQualityParameter": {
+      "AirQualityLocation": {
+        "required": [
+          "id",
+          "name",
+          "locality",
+          "timezone",
+          "country",
+          "owner",
+          "provider",
+          "isMobile",
+          "isMonitor",
+          "instruments",
+          "sensors",
+          "coordinates",
+          "licenses",
+          "bounds",
+          "distance",
+          "dateTimeFirst",
+          "dateTimeLast"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "locality": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "country": {
+            "$ref": "#/components/schemas/AirQualityLocationCountry"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/AirQualityLocationOrganization"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/AirQualityLocationOrganization"
+          },
+          "isMobile": {
+            "type": "boolean"
+          },
+          "isMonitor": {
+            "type": "boolean"
+          },
+          "instruments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AirQualityLocationInstrument"
+            }
+          },
+          "sensors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AirQualityLocationSensor"
+            }
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/AirQualityLocationCoordinates"
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AirQualityLocationLicense"
+            }
+          },
+          "bounds": {
+            "type": "array",
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "distance": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "dateTimeFirst": {
+            "$ref": "#/components/schemas/AirQualityLocationDateTime"
+          },
+          "dateTimeLast": {
+            "$ref": "#/components/schemas/AirQualityLocationDateTime"
+          }
+        }
+      },
+      "AirQualityLocationAttribution": {
+        "required": [
+          "name",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "AirQualityLocationCoordinates": {
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "AirQualityLocationCountry": {
+        "required": [
+          "id",
+          "code",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int64"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "AirQualityLocationDateTime": {
+        "required": [
+          "utc",
+          "local"
+        ],
+        "type": "object",
+        "properties": {
+          "utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "local": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AirQualityLocationInstrument": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "AirQualityLocationLicense": {
+        "required": [
+          "id",
+          "name",
+          "attribution",
+          "dateFrom",
+          "dateTo"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "attribution": {
+            "$ref": "#/components/schemas/AirQualityLocationAttribution"
+          },
+          "dateFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dateTo": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "AirQualityLocationMeta": {
+        "required": [
+          "name",
+          "website",
+          "page",
+          "limit"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "limit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "AirQualityLocationOrganization": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "AirQualityLocationParameter": {
         "required": [
           "id",
           "name",
@@ -157,10 +612,7 @@
         "properties": {
           "id": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
+            "type": "integer",
             "format": "int64"
           },
           "name": {
@@ -177,6 +629,303 @@
           }
         }
       },
+      "AirQualityLocationSensor": {
+        "required": [
+          "id",
+          "name",
+          "parameter"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parameter": {
+            "$ref": "#/components/schemas/AirQualityLocationParameter"
+          }
+        }
+      },
+      "AirQualityLocationsResponse": {
+        "required": [
+          "meta",
+          "results"
+        ],
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/AirQualityLocationMeta"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AirQualityLocation"
+            }
+          }
+        }
+      },
+      "AirQualityMeasurement": {
+        "required": [
+          "value",
+          "parameter",
+          "period",
+          "coordinates",
+          "summary",
+          "coverage"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "parameter": {
+            "$ref": "#/components/schemas/AirQualityMeasurementParameter"
+          },
+          "period": {
+            "$ref": "#/components/schemas/AirQualityMeasurementPeriod"
+          },
+          "coordinates": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AirQualityMeasurementCoordinates"
+              }
+            ]
+          },
+          "summary": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/JsonElement"
+              }
+            ]
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/AirQualityMeasurementCoverage"
+          }
+        }
+      },
+      "AirQualityMeasurementCoordinates": {
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "AirQualityMeasurementCoverage": {
+        "required": [
+          "expectedCount",
+          "expectedInterval",
+          "observedCount",
+          "observedInterval",
+          "percentComplete",
+          "percentCoverage",
+          "dateTimeFrom",
+          "dateTimeTo"
+        ],
+        "type": "object",
+        "properties": {
+          "expectedCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "expectedInterval": {
+            "type": "string"
+          },
+          "observedCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "observedInterval": {
+            "type": "string"
+          },
+          "percentComplete": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "percentCoverage": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "dateTimeFrom": {
+            "$ref": "#/components/schemas/AirQualityMeasurementDateTime"
+          },
+          "dateTimeTo": {
+            "$ref": "#/components/schemas/AirQualityMeasurementDateTime"
+          }
+        }
+      },
+      "AirQualityMeasurementDateTime": {
+        "required": [
+          "utc",
+          "local"
+        ],
+        "type": "object",
+        "properties": {
+          "utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "local": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AirQualityMeasurementMeta": {
+        "required": [
+          "name",
+          "website",
+          "page",
+          "limit"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "limit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "AirQualityMeasurementParameter": {
+        "required": [
+          "id",
+          "name",
+          "units",
+          "displayName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "units": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "AirQualityMeasurementPeriod": {
+        "required": [
+          "label",
+          "interval",
+          "dateTimeFrom",
+          "dateTimeTo"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "interval": {
+            "type": "string"
+          },
+          "dateTimeFrom": {
+            "$ref": "#/components/schemas/AirQualityMeasurementDateTime"
+          },
+          "dateTimeTo": {
+            "$ref": "#/components/schemas/AirQualityMeasurementDateTime"
+          }
+        }
+      },
+      "AirQualityMeasurementsResponse": {
+        "required": [
+          "meta",
+          "results"
+        ],
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/AirQualityMeasurementMeta"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AirQualityMeasurement"
+            }
+          }
+        }
+      },
+      "AirQualityParameter": {
+        "required": [
+          "id",
+          "name",
+          "units",
+          "displayName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "units": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "JsonElement": { },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -196,8 +945,7 @@
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "null",
-              "integer",
-              "string"
+              "integer"
             ],
             "format": "int32"
           },
@@ -215,6 +963,83 @@
           }
         }
       },
+      "UltravioletForecastMeta": {
+        "required": [
+          "max"
+        ],
+        "type": "object",
+        "properties": {
+          "max": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UltravioletForecastResult"
+              }
+            ]
+          }
+        }
+      },
+      "UltravioletForecastMetaResponse": {
+        "required": [
+          "result",
+          "meta"
+        ],
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UltravioletForecastResult"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/UltravioletForecastMeta"
+          }
+        }
+      },
+      "UltravioletForecastResult": {
+        "required": [
+          "uv",
+          "uv_time",
+          "sun_position"
+        ],
+        "type": "object",
+        "properties": {
+          "uv": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "uv_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sun_position": {
+            "$ref": "#/components/schemas/UltravioletSunPosition"
+          }
+        }
+      },
+      "UltravioletSunPosition": {
+        "required": [
+          "azimuth",
+          "altitude"
+        ],
+        "type": "object",
+        "properties": {
+          "azimuth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "altitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "WeatherForecast": {
         "required": [
           "date",
@@ -229,10 +1054,7 @@
           },
           "temperatureC": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
+            "type": "integer",
             "format": "int32"
           },
           "summary": {
@@ -243,10 +1065,7 @@
           },
           "temperatureF": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
+            "type": "integer",
             "format": "int32"
           }
         }
@@ -256,6 +1075,9 @@
   "tags": [
     {
       "name": "Weather"
+    },
+    {
+      "name": "Ultraviolet"
     },
     {
       "name": "AirQuality"
