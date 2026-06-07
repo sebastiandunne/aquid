@@ -15,7 +15,7 @@ export class UvQueries extends QueryFactory<UvService> {
     super(service)
   }
 
-  getForecast (coordinates: MaybeRefOrGetter<LngLat | null>, date?: MaybeRefOrGetter<Dayjs | string>): UseQueryOptions<components['schemas']['UltravioletForecastMetaResponse']> {
+  getForecast (coordinates: MaybeRefOrGetter<LngLat | undefined | null>, date?: MaybeRefOrGetter<Dayjs | string>): UseQueryOptions<components['schemas']['UltravioletForecastMetaResponse']> {
     return queryOptions({
       queryKey: [...this.all, 'forecast', coordinates, date] as QueryKey,
       queryFn: async () => {

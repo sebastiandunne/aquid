@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM, type LngLat, type MapStoreState, type MapViewport } from '@/entities/map'
+import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM, type LastClicked, type LngLat, type MapStoreState, type MapViewport } from '@/entities/map'
 
 const VIEWPORT_STORAGE_KEY = 'aquid.map.viewport'
 
@@ -69,7 +69,7 @@ export const useMapStore = defineStore('map', {
       center: initialViewport.center as LngLat,
       zoom: initialViewport.zoom,
       bounds: initialViewport.bounds,
-      lastClicked: null as LngLat | null,
+      lastClicked: null as LastClicked | null,
     }
   },
   actions: {
@@ -92,7 +92,10 @@ export const useMapStore = defineStore('map', {
       saveViewport(payload)
     },
     setLastClicked (coords: LngLat) {
-      this.lastClicked = coords
+      this.lastClicked = {
+        time: Date.now(),
+        location: coords,
+      }
     },
   },
 })

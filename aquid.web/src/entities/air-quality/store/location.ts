@@ -1,8 +1,13 @@
 import type { AirQualityLocation } from '../model/location'
 import { defineStore } from 'pinia'
 
+type LocationMeta = {
+  time: number
+  data: AirQualityLocation
+}
+
 type LocationStoreState = {
-  selectedLocation: AirQualityLocation | null
+  selectedLocation: LocationMeta | null
 }
 
 const LOCATION_STORAGE_KEY = 'aquid.air-quality.selected-location'
@@ -16,16 +21,16 @@ function isCoordinates (value: unknown): value is AirQualityLocation['coordinate
   )
 }
 
-function isAirQualityLocation (value: unknown): value is AirQualityLocation {
+function isLocationMeta (value: unknown): value is LocationMeta {
   return (
     !!value
     && typeof value === 'object'
-    && typeof (value as AirQualityLocation).id === 'number'
-    && isCoordinates((value as AirQualityLocation).coordinates)
+    && typeof (value as LocationMeta).time === 'number'
+    && isCoordinates((value as LocationMeta).data.coordinates)
   )
 }
 
-function getStoredLocation (): AirQualityLocation | null {
+function getStoredLocation (): LocationMeta | null {
   const raw = localStorage.getItem(LOCATION_STORAGE_KEY)
 
   if (!raw) {
@@ -35,7 +40,7 @@ function getStoredLocation (): AirQualityLocation | null {
   try {
     const parsed = JSON.parse(raw) as unknown
 
-    if (!isAirQualityLocation(parsed)) {
+    if (!isLocationMeta(parsed)) {
       return null
     }
 
@@ -60,7 +65,10 @@ export const useLocationStore = defineStore('location', {
   }),
   actions: {
     setSelectedLocation (location: AirQualityLocation) {
-      this.selectedLocation = location
+      this.selectedLocation = {
+        time: Date.now(),
+        data: location,
+      }
       saveLocation(location)
     },
     clearSelectedLocation () {

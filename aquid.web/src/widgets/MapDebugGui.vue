@@ -6,9 +6,10 @@
 </template>
 
 <script setup lang="ts">
+  import dayjs from 'dayjs'
   import GUI from 'lil-gui'
   import { storeToRefs } from 'pinia'
-  import { onMounted, onUnmounted, reactive, useTemplateRef, watch } from 'vue'
+  import { computed, onMounted, onUnmounted, reactive, useTemplateRef, watch } from 'vue'
   import { useLocationStore } from '@/entities/air-quality'
   import { DEFAULT_ROUTE_LAT, DEFAULT_ROUTE_LNG, DEFAULT_ROUTE_ZOOM, useMapStore } from '@/entities/map'
   import {
@@ -42,6 +43,7 @@
     locationCoordinatesLat: number | string
     locationSensorCount: number
     locationInstrumentCount: number
+    clickTime: string | null
   }
 
   const mapStore = useMapStore()
@@ -49,6 +51,7 @@
   const preferencesStore = usePreferencesStore()
   const { center, zoom, lastClicked, bounds } = storeToRefs(mapStore)
   const { selectedLocation } = storeToRefs(locationStore)
+  const selectedLocationData = computed(() => selectedLocation.value?.data)
   const { language, theme } = storeToRefs(preferencesStore)
 
   const guiContainer = useTemplateRef('guiContainer')
@@ -76,6 +79,7 @@
     locationCoordinatesLat: '-',
     locationSensorCount: 0,
     locationInstrumentCount: 0,
+    clickTime: null,
   })
 
   let gui: GUI | null = null
@@ -96,18 +100,18 @@
     guiState.boundsSouthWestLng = bounds?.value?.southwest.lng
     guiState.boundsSouthWestLat = bounds?.value?.southwest.lat
 
-    if (selectedLocation.value) {
-      guiState.locationId = selectedLocation.value.id
-      guiState.locationName = selectedLocation.value.name
-      guiState.locationLocality = selectedLocation.value.locality ?? '-'
-      guiState.locationCountryCode = selectedLocation.value.country.code
-      guiState.locationCountryName = selectedLocation.value.country.name
-      guiState.locationTimezone = selectedLocation.value.timezone
-      guiState.locationProvider = selectedLocation.value.provider.name
-      guiState.locationCoordinatesLng = formatCoord(selectedLocation.value.coordinates.longitude)
-      guiState.locationCoordinatesLat = formatCoord(selectedLocation.value.coordinates.latitude)
-      guiState.locationSensorCount = selectedLocation.value.sensors?.length ?? 0
-      guiState.locationInstrumentCount = selectedLocation.value.instruments?.length ?? 0
+    if (selectedLocationData.value) {
+      guiState.locationId = selectedLocationData.value.id
+      guiState.locationName = selectedLocationData.value.name
+      guiState.locationLocality = selectedLocationData.value.locality ?? '-'
+      guiState.locationCountryCode = selectedLocationData.value.country.code
+      guiState.locationCountryName = selectedLocationData.value.country.name
+      guiState.locationTimezone = selectedLocationData.value.timezone
+      guiState.locationProvider = selectedLocationData.value.provider.name
+      guiState.locationCoordinatesLng = formatCoord(selectedLocationData.value.coordinates.longitude)
+      guiState.locationCoordinatesLat = formatCoord(selectedLocationData.value.coordinates.latitude)
+      guiState.locationSensorCount = selectedLocationData.value.sensors?.length ?? 0
+      guiState.locationInstrumentCount = selectedLocationData.value.instruments?.length ?? 0
     } else {
       guiState.locationId = '-'
       guiState.locationName = '-'
@@ -128,8 +132,9 @@
       return
     }
 
-    guiState.clickLng = formatCoord(lastClicked.value.lng)
-    guiState.clickLat = formatCoord(lastClicked.value.lat)
+    guiState.clickLng = formatCoord(lastClicked.value.location.lng)
+    guiState.clickLat = formatCoord(lastClicked.value.location.lat)
+    guiState.clickTime = dayjs(lastClicked.value.time).toLocaleString()
   }
 
   function disableControllers (controllers: Array<{ disable: () => void }>) {
@@ -189,6 +194,10 @@
       .add(guiState, 'clickLat')
       .name('lat')
       .listen()
+    // const clickTimeController = clickFolder
+    //   .add(guiState, 'clickTime')
+    //   .name('time')
+    //   .listen()
 
     const boundsNorthEastLngController = boundsFolder
       .add(guiState, 'boundsNorthEastLng')
@@ -258,6 +267,7 @@
       zoomController,
       clickLngController,
       clickLatController,
+      // clickTimeController,
       boundsNorthEastLngController,
       boundsNorthEastLatController,
       boundsSouthWestLngController,
@@ -276,7 +286,7 @@
     ])
 
     syncStateFromStore()
-    stopSync = watch([language, theme, center, zoom, lastClicked, bounds, selectedLocation], syncStateFromStore, {
+    stopSync = watch([language, theme, center, zoom, lastClicked, bounds, selectedLocationData], syncStateFromStore, {
       deep: true,
     })
   })

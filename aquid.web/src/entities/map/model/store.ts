@@ -14,6 +14,11 @@ export type MapViewport = {
   bounds?: MapBounds
 }
 
+export type LastClicked = {
+  time: number
+  location: LngLat
+}
+
 export type MapStoreState = MapViewport & {
-  lastClicked: LngLat | null
+  lastClicked: LastClicked | null
 }
