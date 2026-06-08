@@ -96,11 +96,11 @@ public class AirQualityService
         var queryParts = new List<string>();
         if (start.HasValue)
         {
-            queryParts.Add($"date_from={Uri.EscapeDataString(start.Value.ToString("o"))}");
+            queryParts.Add($"datetime_from={Uri.EscapeDataString(start.Value.ToString("o"))}");
         }
         if (end.HasValue)
         {
-            queryParts.Add($"date_to={Uri.EscapeDataString(end.Value.ToString("o"))}");
+            queryParts.Add($"datetime_to={Uri.EscapeDataString(end.Value.ToString("o"))}");
         }
         var endpoint = $"v3/sensors/{sensorId}/measurements/daily";
         if (queryParts.Count > 0)
