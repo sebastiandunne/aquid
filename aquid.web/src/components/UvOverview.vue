@@ -48,6 +48,7 @@
   import { computed } from 'vue'
   import UvIndexIndicator from '@/components/UvIndexIndicator.vue'
   import UvRiskLevelIndicator from '@/components/UvRiskLevelIndicator.vue'
+  import { formatDate } from '@/entities/_global/config/format-date'
 
   type UltravioletForecastResponse = components['schemas']['UltravioletForecastMetaResponse']
   type UltravioletForecastResult = components['schemas']['UltravioletForecastResult']
@@ -67,12 +68,8 @@
 
   const peakForecastTime = computed(() => {
     const value = maxResult.value?.uv_time
-    if (!value) {
-      return '--'
-    }
 
-    const parsed = dayjs(value)
-    return parsed.isValid() ? parsed.format('MMM DD, HH:mm') : '--'
+    return formatDate(value)
   })
 
   const sunAltitudeText = computed(() => formatAngle(maxResult.value?.sun_position.altitude))

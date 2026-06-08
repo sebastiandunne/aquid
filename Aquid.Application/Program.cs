@@ -24,22 +24,21 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-builder.WebHost.UseSentry(options =>
+var sentryDsn = Environment.GetEnvironmentVariable("SENTRY_DSN");
+if (!string.IsNullOrWhiteSpace(sentryDsn))
 {
+    builder.WebHost.UseSentry(options =>
+    {
 
-    var sentryDsn = Environment.GetEnvironmentVariable("SENTRY_DSN");
-    if (string.IsNullOrWhiteSpace(sentryDsn))
-    {
-        throw new InvalidOperationException("SENTRY_DSN is not configured.");
-    }
-    options.Dsn = sentryDsn;
-    if (builder.Environment.IsDevelopment())
-    {
-        options.Debug = true;
-    }
-    options.TracesSampleRate = 1.0;
-    options.AttachStacktrace = true;
-});
+        options.Dsn = sentryDsn;
+        if (builder.Environment.IsDevelopment())
+        {
+            options.Debug = true;
+        }
+        options.TracesSampleRate = 1.0;
+        options.AttachStacktrace = true;
+    });
+}
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>

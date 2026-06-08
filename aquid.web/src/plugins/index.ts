@@ -14,7 +14,9 @@ import { initSentry } from './sentry'
 import vuetify from './vuetify'
 
 export function registerPlugins (app: App) {
-  initSentry(app, import.meta.env.VITE_SENTRY_DSN)
+  if (import.meta.env.VITE_SENTRY_DSN) {
+    initSentry(app, import.meta.env.VITE_SENTRY_DSN)
+  }
   app.use(vuetify)
   app.use(createPinia())
   app.use(i18n)
