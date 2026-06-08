@@ -15,12 +15,14 @@ export class AquidServices {
   constructor ({
     aquidBaseUrl = import.meta.env.VITE_API_BASE_URL,
     mapboxAccessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN,
+    mapboxBaseUrl = import.meta.env.VITE_MAPBOX_BASE_URL,
   }: {
     aquidBaseUrl?: string
     mapboxAccessToken?: string
+    mapboxBaseUrl?: string
   } = {}) {
     this.aquidClient = new AquidClient(aquidBaseUrl)
-    this.mapboxClient = new MapboxClient(mapboxAccessToken)
+    this.mapboxClient = new MapboxClient(mapboxBaseUrl, mapboxAccessToken)
 
     this.airQuality = new AirQualityService(this.aquidClient)
     this.uv = new UvService(this.aquidClient)

@@ -2,12 +2,12 @@ import type { MapboxRetrieveResponse, MapboxSuggestResponse } from '../../entiti
 import { AquidClient } from '@/shared/client/aquid-client'
 
 export class MapboxClient extends AquidClient {
-  constructor (private readonly accessToken: string) {
-    super('https://api.mapbox.com/search/searchbox/v1')
+  constructor (private readonly url: string, private readonly accessToken: string) {
+    super(url)
   }
 
   async suggest (query: string, sessionToken: string, limit = 5): Promise<MapboxSuggestResponse> {
-    const url = new URL('https://api.mapbox.com/search/searchbox/v1/suggest')
+    const url = new URL(`${this.url}/suggest`)
     url.searchParams.set('q', query)
     url.searchParams.set('session_token', sessionToken)
     url.searchParams.set('access_token', this.accessToken)
@@ -23,7 +23,7 @@ export class MapboxClient extends AquidClient {
   }
 
   async retrieve (id: string, sessionToken: string): Promise<MapboxRetrieveResponse> {
-    const url = new URL(`https://api.mapbox.com/search/searchbox/v1/retrieve/${encodeURIComponent(id)}`)
+    const url = new URL(`${this.url}/retrieve/${encodeURIComponent(id)}`)
     url.searchParams.set('session_token', sessionToken)
     url.searchParams.set('access_token', this.accessToken)
 
