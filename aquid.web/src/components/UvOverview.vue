@@ -13,10 +13,10 @@
             <p class="tabular-nums whitespace-nowrap">{{ maxUvText }}</p>
           </div>
 
-          <div class="grid grid-cols-[minmax(0,1.2fr)_auto] gap-x-2 items-center text-xs leading-4 py-1 border-b border-gray-200/70">
+          <!-- <div class="grid grid-cols-[minmax(0,1.2fr)_auto] gap-x-2 items-center text-xs leading-4 py-1 border-b border-gray-200/70">
             <p class="font-medium truncate" title="Time to burn (minutes)">Time to burn (minutes)</p>
             <UvRiskLevelIndicator :minutes="timeToBurnMinutes" />
-          </div>
+          </div> -->
 
           <div class="grid grid-cols-[minmax(0,1.2fr)_auto] gap-x-2 items-baseline text-xs leading-4 py-1 border-b border-gray-200/70">
             <p class="font-medium truncate" title="Peak forecast time">Peak forecast time</p>
